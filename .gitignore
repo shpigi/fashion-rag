@@ -1,0 +1,8 @@
+.claude/
+claude.md
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+data/images/
+data/embeddings.npz
