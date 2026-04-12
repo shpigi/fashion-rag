@@ -12,10 +12,27 @@ EMBEDDINGS_FILE = DATA_DIR / "embeddings.npz"
 METADATA_CSV = DATA_DIR / "metadata.csv"
 
 
+def load_model():
+    model = CLIPModel.from_pretrained(MODEL_NAME)
+    processor = CLIPProcessor.from_pretrained(MODEL_NAME)
+    model.eval()
+    return model, processor
+
+
 def load_index():
     data = np.load(EMBEDDINGS_FILE)
     metadata = pd.read_csv(METADATA_CSV).set_index("id").loc[data["ids"]].reset_index()
     return data["embeddings"], metadata
+
+
+def encode_text(query, model, processor):
+    inputs = processor(
+        text=[f"a photo of {query}"], return_tensors="pt", padding=True, truncation=True
+    )
+    with torch.no_grad():
+        emb = model.get_text_features(**inputs).pooler_output
+    emb = emb / emb.norm(dim=-1, keepdim=True)
+    return emb[0].numpy()
 
 
 def search(query_emb, embeddings, metadata, k=10):
@@ -28,20 +45,9 @@ def search(query_emb, embeddings, metadata, k=10):
 
 def main():
     query = " ".join(sys.argv[1:]) or "red dress"
-
-    model = CLIPModel.from_pretrained(MODEL_NAME)
-    processor = CLIPProcessor.from_pretrained(MODEL_NAME)
-    model.eval()
-
-    inputs = processor(
-        text=[f"a photo of {query}"], return_tensors="pt", padding=True, truncation=True
-    )
-    with torch.no_grad():
-        emb = model.get_text_features(**inputs).pooler_output
-    emb = emb / emb.norm(dim=-1, keepdim=True)
-    query_emb = emb[0].numpy()
-
+    model, processor = load_model()
     embeddings, metadata = load_index()
+    query_emb = encode_text(query, model, processor)
     results = search(query_emb, embeddings, metadata)
 
     print(f"\nTop 10 results for: \"{query}\"\n")

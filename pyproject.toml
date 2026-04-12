@@ -10,4 +10,5 @@ dependencies = [
     "torch",
     "transformers",
     "tqdm",
+    "streamlit",
 ]
