@@ -13,9 +13,9 @@ Local-first development. Get everything working on local data before touching GC
 
 ## Phase 2: Local Streamlit App
 
-- [ ] `app.py` — Text input, encode with CLIP, search local embeddings, display top-K images from `data/images/` with metadata match indicators and Precision@K
-- [ ] Predefined eval queries dropdown (from Phase 1 eval set)
-- [ ] Free-text query support with keyword-based metadata matching for eval
+- [x] `app.py` — Text input, encode with CLIP, search local embeddings, display top-K images from `data/images/` with metadata match indicators and Precision@K
+- [x] Predefined eval queries dropdown (from Phase 1 eval set)
+- [x] Free-text query support with keyword-based metadata matching for eval
 
 ## Phase 3: GCP Migration
 
