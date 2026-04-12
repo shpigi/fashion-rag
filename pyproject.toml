@@ -11,4 +11,9 @@ dependencies = [
     "transformers",
     "tqdm",
     "streamlit",
+    "google-cloud-bigquery",
+    "google-cloud-storage",
+    "gcsfs",
+    "universal-pathlib",
+    "db-dtypes",
 ]
