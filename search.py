@@ -1,15 +1,16 @@
 import sys
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import torch
+from google.cloud import bigquery
 from transformers import CLIPModel, CLIPProcessor
 
+GCP_PROJECT = "fashion-rag"
+BQ_DATASET = "fashion"
+EMBEDDINGS_FILE = "data/embeddings.npz"
+
 MODEL_NAME = "openai/clip-vit-base-patch32"
-DATA_DIR = Path("data")
-EMBEDDINGS_FILE = DATA_DIR / "embeddings.npz"
-METADATA_CSV = DATA_DIR / "metadata.csv"
 
 
 def load_model():
@@ -21,8 +22,13 @@ def load_model():
 
 def load_index():
     data = np.load(EMBEDDINGS_FILE)
-    metadata = pd.read_csv(METADATA_CSV).set_index("id").loc[data["ids"]].reset_index()
-    return data["embeddings"], metadata
+    ids = data["ids"]
+    embeddings = data["embeddings"]
+
+    client = bigquery.Client(project=GCP_PROJECT)
+    metadata = client.query(f"SELECT * FROM `{BQ_DATASET}.metadata`").to_dataframe()
+    metadata = metadata.set_index("id").loc[ids].reset_index()
+    return embeddings, metadata
 
 
 def encode_text(query, model, processor):
