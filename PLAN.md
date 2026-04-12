@@ -6,8 +6,8 @@ Local-first development. Get everything working on local data before touching GC
 
 **Goal:** Prove that CLIP retrieval works on our 500-image subset using search terms derived from metadata.
 
-- [ ] `embed.py` — Load CLIP ViT-B/32 (HuggingFace `transformers`), batch-encode all 500 images, save embeddings to a local numpy/parquet file alongside product IDs
-- [ ] `search.py` — Load saved embeddings, encode a text query with CLIP text encoder, compute cosine similarity, return top-K results
+- [x] `embed.py` — Load CLIP ViT-B/32 (HuggingFace `transformers`), batch-encode all 500 images, save embeddings to a local numpy/parquet file alongside product IDs
+- [x] `search.py` — Load saved embeddings, encode a text query with CLIP text encoder, compute cosine similarity, return top-K results
 
 **Output:** Embeddings file, search function, eval report with per-query and aggregate Precision@K.
 
