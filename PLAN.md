@@ -21,12 +21,16 @@ Local-first development. Get everything working on local data before touching GC
 
 - [x] Upload images to GCS bucket
 - [x] Load metadata fro GCP
-- [x] App lodas images from gcs
+- [x] App loads images from gcs
 - [x] Upload embeddings into BigQuery with vector index
+- [x] Switch Streamlit app to query BigQuery VECTOR_SEARCH instead of local numpy
 
 
-## Phase 4: pipeline
+## Phase 4: Pipeline
 
-- [ ] `pipeline.py` — Vertex AI Pipeline wrapping the CLIP embedding step as a KFP component
-- [ ] Switch Streamlit app to query BigQuery VECTOR_SEARCH instead of local numpy
+- [x] `pipeline.py` — Vertex AI Pipeline wrapping the CLIP embedding step as a KFP component
+
+## Phase 5: Eval
+
+- [x] How well does clip based image search match item type and colour
 

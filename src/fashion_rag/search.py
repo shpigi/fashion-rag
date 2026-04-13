@@ -1,5 +1,6 @@
 import sys
 
+import numpy as np
 import torch
 from google.cloud import bigquery
 from transformers import CLIPModel, CLIPProcessor
@@ -27,6 +28,25 @@ def encode_text(query, model, processor):
         emb = model.get_text_features(**inputs).pooler_output
     emb = emb / emb.norm(dim=-1, keepdim=True)
     return emb[0].numpy()
+
+
+def load_bq_index():
+    client = bigquery.Client(project=GCP_PROJECT)
+    metadata = client.query(f"""
+        SELECT e.id, e.embedding, m.* EXCEPT(id)
+        FROM `{BQ_EMBEDDINGS_TABLE}` e
+        JOIN `{BQ_METADATA_TABLE}` m ON e.id = m.id
+    """).to_dataframe()
+    embeddings = np.stack(metadata.pop("embedding").values)
+    return embeddings, metadata
+
+
+def local_search(query_emb, embeddings, metadata, k=10):
+    scores = embeddings @ query_emb
+    top_idx = np.argsort(scores)[::-1][:k]
+    results = metadata.iloc[top_idx].copy()
+    results["score"] = scores[top_idx]
+    return results
 
 
 def search(query_emb, k=10):
