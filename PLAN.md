@@ -20,7 +20,7 @@ Local-first development. Get everything working on local data before touching GC
 ## Phase 3: GCP Migration
 
 - [x] Upload images to GCS bucket
-- [x] Load metadata 
+- [x] Load metadata fro GCP
 - [ ] Upload embeddings into BigQuery with vector index
 - [ ] `pipeline.py` — Vertex AI Pipeline wrapping the CLIP embedding step as a KFP component
 - [ ] Switch Streamlit app to query BigQuery VECTOR_SEARCH instead of local numpy

@@ -1,8 +1,9 @@
 import streamlit as st
+from upath import UPath
 
-from search import DATA_DIR, encode_text, load_index, load_model, search
+from search import encode_text, load_index, load_model, search
 
-IMAGES_DIR = DATA_DIR / "images"
+IMAGES_DIR = UPath("gs://fashion-data-500/images")
 
 EVAL_QUERIES = [
     {"query": "red dresses", "expected": {"baseColour": "Red", "articleType": "Dresses"}},
@@ -82,10 +83,7 @@ def main():
         img_path = IMAGES_DIR / f"{row['id']}.jpg"
 
         with col:
-            if img_path.exists():
-                st.image(str(img_path), use_container_width=True)
-            else:
-                st.warning(f"Missing: {row['id']}")
+            st.image(img_path.read_bytes(), use_container_width=True)
 
             st.caption(f"Score: {row['score']:.3f}")
 
