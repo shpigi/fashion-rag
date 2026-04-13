@@ -1,14 +1,13 @@
 import sys
 
-import numpy as np
-import pandas as pd
 import torch
 from google.cloud import bigquery
 from transformers import CLIPModel, CLIPProcessor
 
 GCP_PROJECT = "fashion-rag"
 BQ_DATASET = "fashion"
-EMBEDDINGS_FILE = "data/embeddings.npz"
+BQ_EMBEDDINGS_TABLE = f"{GCP_PROJECT}.{BQ_DATASET}.clip_embeddings"
+BQ_METADATA_TABLE = f"{GCP_PROJECT}.{BQ_DATASET}.metadata"
 
 MODEL_NAME = "openai/clip-vit-base-patch32"
 
@@ -18,17 +17,6 @@ def load_model():
     processor = CLIPProcessor.from_pretrained(MODEL_NAME)
     model.eval()
     return model, processor
-
-
-def load_index():
-    data = np.load(EMBEDDINGS_FILE)
-    ids = data["ids"]
-    embeddings = data["embeddings"]
-
-    client = bigquery.Client(project=GCP_PROJECT)
-    metadata = client.query(f"SELECT * FROM `{BQ_DATASET}.metadata`").to_dataframe()
-    metadata = metadata.set_index("id").loc[ids].reset_index()
-    return embeddings, metadata
 
 
 def encode_text(query, model, processor):
@@ -41,20 +29,35 @@ def encode_text(query, model, processor):
     return emb[0].numpy()
 
 
-def search(query_emb, embeddings, metadata, k=10):
-    scores = embeddings @ query_emb
-    top_idx = np.argsort(scores)[::-1][:k]
-    results = metadata.iloc[top_idx].copy()
-    results["score"] = scores[top_idx]
-    return results
+def search(query_emb, k=10):
+    client = bigquery.Client(project=GCP_PROJECT)
+    emb_str = ", ".join(str(float(x)) for x in query_emb)
+    sql = f"""
+    SELECT
+        base.id,
+        distance,
+        meta.* EXCEPT(id)
+    FROM VECTOR_SEARCH(
+        TABLE `{BQ_EMBEDDINGS_TABLE}`,
+        'embedding',
+        (SELECT [{emb_str}] AS embedding),
+        top_k => {k},
+        distance_type => 'COSINE'
+    )
+    JOIN `{BQ_METADATA_TABLE}` meta ON base.id = meta.id
+    ORDER BY distance ASC
+    """
+    df = client.query(sql).to_dataframe()
+    df["score"] = 1.0 - df["distance"]
+    df = df.drop(columns=["distance"])
+    return df
 
 
 def main():
     query = " ".join(sys.argv[1:]) or "red dress"
     model, processor = load_model()
-    embeddings, metadata = load_index()
     query_emb = encode_text(query, model, processor)
-    results = search(query_emb, embeddings, metadata)
+    results = search(query_emb)
 
     print(f"\nTop 10 results for: \"{query}\"\n")
     for _, row in results.iterrows():
