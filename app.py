@@ -1,7 +1,8 @@
 import streamlit as st
+from google.cloud import bigquery
 from upath import UPath
 
-from search import encode_text, load_index, load_model, search
+from search import GCP_PROJECT, BQ_DATASET, encode_text, load_model, search
 
 IMAGES_DIR = UPath("gs://fashion-data-500/images")
 
@@ -27,8 +28,9 @@ def cached_model():
 
 
 @st.cache_resource
-def cached_index():
-    return load_index()
+def cached_metadata():
+    client = bigquery.Client(project=GCP_PROJECT)
+    return client.query(f"SELECT * FROM `{BQ_DATASET}.metadata`").to_dataframe()
 
 
 def extract_expected(query, metadata):
@@ -48,7 +50,7 @@ def main():
     st.title("Fashion Image Retrieval")
 
     model, processor = cached_model()
-    embeddings, metadata = cached_index()
+    metadata = cached_metadata()
 
     k = st.sidebar.slider("Top-K results", min_value=3, max_value=20, value=10)
     mode = st.sidebar.radio("Query mode", ["Free text", "Eval queries"])
@@ -67,7 +69,7 @@ def main():
         return
 
     query_emb = encode_text(query, model, processor)
-    results = search(query_emb, embeddings, metadata, k=k)
+    results = search(query_emb, k=k)
 
     if expected:
         match_all = sum(
