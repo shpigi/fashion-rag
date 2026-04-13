@@ -4,5 +4,4 @@ claude.md
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
-data/images/
-data/embeddings.npz
+data/
