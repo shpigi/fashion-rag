@@ -11,3 +11,5 @@ BUCKET = "gs://fashion-data-500"
 IMAGES_DIR = UPath(BUCKET) / "images"
 
 MODEL_NAME = "openai/clip-vit-base-patch32"
+
+COMPONENT_IMAGE = f"{GCP_REGION}-docker.pkg.dev/{GCP_PROJECT}/containers/fashion-rag-component:latest"
