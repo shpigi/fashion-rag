@@ -4,14 +4,17 @@ BUCKET     := gs://fashion-data-500
 LOCAL_DATA := ./data
 BQ_DATASET := fashion
 
-AR_REPO    := $(REGION)-docker.pkg.dev/$(PROJECT)/containers
-APP_IMAGE  := $(AR_REPO)/fashion-rag-app:latest
-APP_SA     := fashion-rag-app@$(PROJECT).iam.gserviceaccount.com
+AR_REPO        := $(REGION)-docker.pkg.dev/$(PROJECT)/containers
+APP_IMAGE      := $(AR_REPO)/fashion-rag-app:latest
+COMPONENT_IMAGE := $(AR_REPO)/fashion-rag-component:latest
+APP_SA         := fashion-rag-app@$(PROJECT).iam.gserviceaccount.com
 
 .PHONY: bucket upload-images upload-csv bq-dataset bq-load upload bq \
         ar-repo docker-auth service-account cloud-run-permissions \
         setup cloud-run-setup \
         docker-app docker-push-app deploy-app \
+        docker-component docker-push-component \
+        pipeline-compile pipeline-submit pipeline \
         embed search app app-docker
 
 # =============================================================================
@@ -89,8 +92,25 @@ app-docker: docker-app
 docker-app:
 	docker build -f app/Dockerfile -t $(APP_IMAGE) .
 
+docker-component:
+	docker build -f vertex/Dockerfile -t $(COMPONENT_IMAGE) .
+
 docker-push-app: docker-app
 	docker push $(APP_IMAGE)
+
+docker-push-component: docker-component
+	docker push $(COMPONENT_IMAGE)
+
+pipeline-compile:
+	uv run python -m vertex.pipelines.clip_embed
+
+pipeline-submit:
+	uv run python -m vertex.pipelines.clip_embed --submit
+
+pipeline-append: docker-push-component
+	uv run python -m vertex.pipelines.clip_embed --submit --no-recreate
+
+pipeline: docker-push-component pipeline-submit
 
 deploy-app: docker-push-app
 	gcloud run deploy fashion-rag \

@@ -24,6 +24,10 @@ app = [
     "fashion-rag[ml]",
     "streamlit",
 ]
+vertex = [
+    "kfp",
+    "google-cloud-aiplatform",
+]
 
 [build-system]
 requires = ["hatchling"]

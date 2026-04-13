@@ -15,7 +15,7 @@ from fashion_rag.config import (
 )
 
 BATCH_SIZE = 32
-NUM_WORKERS = 8
+NUM_WORKERS = 4
 
 BQ_SCHEMA = [
     bigquery.SchemaField("id", "INTEGER", mode="REQUIRED"),
@@ -35,36 +35,63 @@ class ImageDataset(Dataset):
             return Image.open(f).convert("RGB")
 
 
-def get_image_ids():
+def get_ids_to_embed(recreate=True):
     client = bigquery.Client(project=GCP_PROJECT)
-    rows = client.query(f"SELECT id FROM `{BQ_METADATA_TABLE}` ORDER BY id").result()
-    return [row.id for row in rows]
+    all_ids = [
+        row.id for row in
+        client.query(f"SELECT id FROM `{BQ_METADATA_TABLE}` ORDER BY id").result()
+    ]
+
+    if recreate:
+        return all_ids
+
+    try:
+        embedded = {
+            row.id for row in
+            client.query(f"SELECT id FROM `{BQ_EMBEDDINGS_TABLE}`").result()
+        }
+    except Exception:
+        embedded = set()
+
+    missing = sorted(set(all_ids) - embedded)
+    print(f"{len(all_ids)} in metadata, {len(embedded)} already embedded, {len(missing)} to embed")
+    return missing
 
 
-def write_embeddings(ids, embeddings):
+def write_embeddings(ids, embeddings, disposition="WRITE_APPEND"):
     client = bigquery.Client(project=GCP_PROJECT)
     rows = [
         {"id": int(pid), "embedding": emb.tolist()}
         for pid, emb in zip(ids, embeddings)
     ]
     job_config = bigquery.LoadJobConfig(
-        write_disposition="WRITE_TRUNCATE",
+        write_disposition=disposition,
         schema=BQ_SCHEMA,
     )
     job = client.load_table_from_json(rows, BQ_EMBEDDINGS_TABLE, job_config=job_config)
     job.result()
-    print(f"Wrote {len(rows)} rows to {BQ_EMBEDDINGS_TABLE}")
+    print(f"Wrote {len(rows)} rows to {BQ_EMBEDDINGS_TABLE} ({disposition})")
 
 
-def main():
+def delete_embeddings_table():
+    client = bigquery.Client(project=GCP_PROJECT)
+    client.delete_table(BQ_EMBEDDINGS_TABLE, not_found_ok=True)
+    print(f"Deleted {BQ_EMBEDDINGS_TABLE}")
+
+
+def embed_images(ids, shard_index=0, num_shards=1):
+    if not ids:
+        print("Nothing to embed")
+        return
+
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model = CLIPModel.from_pretrained(MODEL_NAME).to(device)
     processor = CLIPProcessor.from_pretrained(MODEL_NAME)
     model.eval()
 
-    ids = get_image_ids()
-    image_paths = [IMAGES_DIR / f"{pid}.jpg" for pid in ids]
-    print(f"Encoding {len(ids)} images from {IMAGES_DIR} on {device}")
+    shard_ids = ids[shard_index::num_shards]
+    image_paths = [IMAGES_DIR / f"{pid}.jpg" for pid in shard_ids]
+    print(f"Shard {shard_index}/{num_shards}: {len(shard_ids)} images on {device}")
 
     dataset = ImageDataset(image_paths)
     loader = DataLoader(dataset, batch_size=BATCH_SIZE, num_workers=NUM_WORKERS, collate_fn=list)
@@ -78,8 +105,10 @@ def main():
         all_embeddings.append(emb.cpu().numpy())
 
     embeddings = np.concatenate(all_embeddings)
-    write_embeddings(ids, embeddings)
+    write_embeddings(shard_ids, embeddings)
 
 
 if __name__ == "__main__":
-    main()
+    ids = get_ids_to_embed(recreate=True)
+    delete_embeddings_table()
+    embed_images(ids)
