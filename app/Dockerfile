@@ -11,6 +11,9 @@ RUN uv sync --frozen --no-dev --extra app
 
 COPY app/ app/
 
+# Pre-download CLIP model weights so cold starts don't hit HuggingFace. Prevents HF refusals.
+RUN .venv/bin/python -c "from transformers import CLIPModel, CLIPProcessor; CLIPModel.from_pretrained('openai/clip-vit-base-patch32'); CLIPProcessor.from_pretrained('openai/clip-vit-base-patch32')"
+
 ENV PATH="/app/.venv/bin:$PATH"
 EXPOSE 8080
 
