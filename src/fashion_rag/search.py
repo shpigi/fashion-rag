@@ -4,12 +4,12 @@ import torch
 from google.cloud import bigquery
 from transformers import CLIPModel, CLIPProcessor
 
-GCP_PROJECT = "fashion-rag"
-BQ_DATASET = "fashion"
-BQ_EMBEDDINGS_TABLE = f"{GCP_PROJECT}.{BQ_DATASET}.clip_embeddings"
-BQ_METADATA_TABLE = f"{GCP_PROJECT}.{BQ_DATASET}.metadata"
-
-MODEL_NAME = "openai/clip-vit-base-patch32"
+from fashion_rag.config import (
+    BQ_EMBEDDINGS_TABLE,
+    BQ_METADATA_TABLE,
+    GCP_PROJECT,
+    MODEL_NAME,
+)
 
 
 def load_model():

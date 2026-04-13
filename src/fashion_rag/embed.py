@@ -5,15 +5,15 @@ from PIL import Image
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 from transformers import CLIPModel, CLIPProcessor
-from upath import UPath
 
-GCP_PROJECT = "fashion-rag"
-BQ_DATASET = "fashion"
-BQ_EMBEDDINGS_TABLE = f"{GCP_PROJECT}.{BQ_DATASET}.clip_embeddings"
-BUCKET = "gs://fashion-data-500"
-IMAGES_DIR = UPath(BUCKET) / "images"
+from fashion_rag.config import (
+    BQ_EMBEDDINGS_TABLE,
+    BQ_METADATA_TABLE,
+    GCP_PROJECT,
+    IMAGES_DIR,
+    MODEL_NAME,
+)
 
-MODEL_NAME = "openai/clip-vit-base-patch32"
 BATCH_SIZE = 32
 NUM_WORKERS = 8
 
@@ -37,7 +37,7 @@ class ImageDataset(Dataset):
 
 def get_image_ids():
     client = bigquery.Client(project=GCP_PROJECT)
-    rows = client.query(f"SELECT id FROM `{BQ_DATASET}.metadata` ORDER BY id").result()
+    rows = client.query(f"SELECT id FROM `{BQ_METADATA_TABLE}` ORDER BY id").result()
     return [row.id for row in rows]
 
 

@@ -494,7 +494,7 @@ wheels = [
 [[package]]
 name = "fashion-rag"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "db-dtypes" },
     { name = "gcsfs" },
@@ -503,28 +503,38 @@ dependencies = [
     { name = "numpy" },
     { name = "pandas" },
     { name = "pillow" },
+    { name = "tqdm" },
+    { name = "universal-pathlib" },
+]
+
+[package.optional-dependencies]
+app = [
     { name = "streamlit" },
     { name = "torch" },
-    { name = "tqdm" },
     { name = "transformers" },
-    { name = "universal-pathlib" },
+]
+ml = [
+    { name = "torch" },
+    { name = "transformers" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "db-dtypes" },
+    { name = "fashion-rag", extras = ["ml"], marker = "extra == 'app'" },
     { name = "gcsfs" },
     { name = "google-cloud-bigquery" },
     { name = "google-cloud-storage" },
     { name = "numpy" },
     { name = "pandas" },
     { name = "pillow" },
-    { name = "streamlit" },
-    { name = "torch" },
+    { name = "streamlit", marker = "extra == 'app'" },
+    { name = "torch", marker = "extra == 'ml'" },
     { name = "tqdm" },
-    { name = "transformers" },
+    { name = "transformers", marker = "extra == 'ml'" },
     { name = "universal-pathlib" },
 ]
+provides-extras = ["ml", "app"]
 
 [[package]]
 name = "filelock"

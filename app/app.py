@@ -1,10 +1,8 @@
 import streamlit as st
 from google.cloud import bigquery
-from upath import UPath
 
-from search import GCP_PROJECT, BQ_DATASET, encode_text, load_model, search
-
-IMAGES_DIR = UPath("gs://fashion-data-500/images")
+from fashion_rag.config import BQ_METADATA_TABLE, GCP_PROJECT, IMAGES_DIR
+from fashion_rag.search import encode_text, load_model, search
 
 EVAL_QUERIES = [
     {"query": "red dresses", "expected": {"baseColour": "Red", "articleType": "Dresses"}},
@@ -30,7 +28,7 @@ def cached_model():
 @st.cache_resource
 def cached_metadata():
     client = bigquery.Client(project=GCP_PROJECT)
-    return client.query(f"SELECT * FROM `{BQ_DATASET}.metadata`").to_dataframe()
+    return client.query(f"SELECT * FROM `{BQ_METADATA_TABLE}`").to_dataframe()
 
 
 def extract_expected(query, metadata):
