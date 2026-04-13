@@ -1,22 +1,38 @@
-from concurrent.futures import ThreadPoolExecutor
-from pathlib import Path
-
 import numpy as np
 import torch
 from google.cloud import bigquery
 from PIL import Image
+from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 from transformers import CLIPModel, CLIPProcessor
 from upath import UPath
 
 GCP_PROJECT = "fashion-rag"
 BQ_DATASET = "fashion"
+BQ_EMBEDDINGS_TABLE = f"{GCP_PROJECT}.{BQ_DATASET}.clip_embeddings"
 BUCKET = "gs://fashion-data-500"
 IMAGES_DIR = UPath(BUCKET) / "images"
-EMBEDDINGS_FILE = Path("data/embeddings.npz")
 
 MODEL_NAME = "openai/clip-vit-base-patch32"
 BATCH_SIZE = 32
+NUM_WORKERS = 8
+
+BQ_SCHEMA = [
+    bigquery.SchemaField("id", "INTEGER", mode="REQUIRED"),
+    bigquery.SchemaField("embedding", "FLOAT64", mode="REPEATED"),
+]
+
+
+class ImageDataset(Dataset):
+    def __init__(self, image_paths):
+        self.paths = image_paths
+
+    def __len__(self):
+        return len(self.paths)
+
+    def __getitem__(self, idx):
+        with self.paths[idx].open("rb") as f:
+            return Image.open(f).convert("RGB")
 
 
 def get_image_ids():
@@ -25,9 +41,19 @@ def get_image_ids():
     return [row.id for row in rows]
 
 
-def load_image(path):
-    with path.open("rb") as f:
-        return Image.open(f).convert("RGB")
+def write_embeddings(ids, embeddings):
+    client = bigquery.Client(project=GCP_PROJECT)
+    rows = [
+        {"id": int(pid), "embedding": emb.tolist()}
+        for pid, emb in zip(ids, embeddings)
+    ]
+    job_config = bigquery.LoadJobConfig(
+        write_disposition="WRITE_TRUNCATE",
+        schema=BQ_SCHEMA,
+    )
+    job = client.load_table_from_json(rows, BQ_EMBEDDINGS_TABLE, job_config=job_config)
+    job.result()
+    print(f"Wrote {len(rows)} rows to {BQ_EMBEDDINGS_TABLE}")
 
 
 def main():
@@ -40,11 +66,11 @@ def main():
     image_paths = [IMAGES_DIR / f"{pid}.jpg" for pid in ids]
     print(f"Encoding {len(ids)} images from {IMAGES_DIR} on {device}")
 
+    dataset = ImageDataset(image_paths)
+    loader = DataLoader(dataset, batch_size=BATCH_SIZE, num_workers=NUM_WORKERS, collate_fn=list)
+
     all_embeddings = []
-    for i in tqdm(range(0, len(image_paths), BATCH_SIZE)):
-        batch_paths = image_paths[i : i + BATCH_SIZE]
-        with ThreadPoolExecutor(max_workers=8) as pool:
-            images = list(pool.map(load_image, batch_paths))
+    for images in tqdm(loader):
         inputs = processor(images=images, return_tensors="pt", padding=True).to(device)
         with torch.no_grad():
             emb = model.get_image_features(**inputs).pooler_output
@@ -52,8 +78,7 @@ def main():
         all_embeddings.append(emb.cpu().numpy())
 
     embeddings = np.concatenate(all_embeddings)
-    np.savez(EMBEDDINGS_FILE, ids=np.array(ids), embeddings=embeddings)
-    print(f"Saved {len(ids)} embeddings to {EMBEDDINGS_FILE}")
+    write_embeddings(ids, embeddings)
 
 
 if __name__ == "__main__":
