@@ -19,7 +19,7 @@ def clip_embed_pipeline(recreate: bool = True):
         parallelism=NUM_SHARDS,
     ) as shard_index:
         embed_task = embed_shard(
-            ids=resolve_task.output,
+            ids_in=resolve_task.outputs["ids_out"],
             shard_index=shard_index,
             num_shards=NUM_SHARDS,
         )
