@@ -21,12 +21,12 @@ Local-first development. Get everything working on local data before touching GC
 
 - [x] Upload images to GCS bucket
 - [x] Load metadata fro GCP
-- [ ] Upload embeddings into BigQuery with vector index
+- [x] App lodas images from gcs
+- [x] Upload embeddings into BigQuery with vector index
+
+
+## Phase 4: pipeline
+
 - [ ] `pipeline.py` — Vertex AI Pipeline wrapping the CLIP embedding step as a KFP component
 - [ ] Switch Streamlit app to query BigQuery VECTOR_SEARCH instead of local numpy
 
-## Phase 4: Polish for Demo
-
-- [ ] Clean Streamlit UI (image cards, distance scores, green/red match indicators)
-- [ ] Predefined eval queries with hand-labeled expected attributes
-- [ ] Prepare talking points for 4 design decisions (CLIP vs Google embeddings, pipeline as Vertex step, BQ as vector store, metadata-based eval)
