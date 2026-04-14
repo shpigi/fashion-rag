@@ -73,19 +73,27 @@ def main():
 
     df = pd.DataFrame(results_list).sort_values("rr", ascending=False)
 
-    print(f"{'Query':<30} {'Avail':>5} {f'RR@{k}':>6} {'RR_col':>6} {'RR_typ':>6} {f'R@{k}':>6}")
-    print("-" * 64)
+    lines = []
+    lines.append(f"{'Query':<30} {'Avail':>5} {f'RR@{k}':>6} {'RR_col':>6} {'RR_typ':>6} {f'R@{k}':>6}")
+    lines.append("-" * 64)
     for _, r in df.iterrows():
-        print(
+        lines.append(
             f"{r['query']:<30} {r['available']:>5} {r['rr']:>6.2f} "
             f"{r['rr_colour']:>6.2f} {r['rr_type']:>6.2f} {r['r@k']:>6.2f}"
         )
+    lines.append(f"\n{'=' * 64}")
+    lines.append(f"MRR@{k}:                   {df['rr'].mean():.3f}")
+    lines.append(f"MRR@{k} (colour):          {df['rr_colour'].mean():.3f}")
+    lines.append(f"MRR@{k} (type):            {df['rr_type'].mean():.3f}")
+    lines.append(f"Mean Recall@{k}:           {df['r@k'].mean():.3f}")
 
-    print(f"\n{'=' * 64}")
-    print(f"MRR@{k}:                   {df['rr'].mean():.3f}")
-    print(f"MRR@{k} (colour):          {df['rr_colour'].mean():.3f}")
-    print(f"MRR@{k} (type):            {df['rr_type'].mean():.3f}")
-    print(f"Mean Recall@{k}:           {df['r@k'].mean():.3f}")
+    report = "\n".join(lines)
+    print(report)
+
+    out = "eval-outputs/eval_report.txt"
+    with open(out, "w") as f:
+        f.write(report + "\n")
+    print(f"\nSaved to {out}")
 
 
 if __name__ == "__main__":
