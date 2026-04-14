@@ -2,9 +2,7 @@ import argparse
 
 import matplotlib.pyplot as plt
 import numpy as np
-import torch
-
-from fashion_rag.search import load_bq_index, load_model
+from fashion_rag.search import encode_texts, load_bq_index, load_model
 
 
 def reduce(embeddings, method="umap"):
@@ -27,14 +25,10 @@ def main():
 
     print(f"Encoding {len(metadata)} product descriptions...")
     descriptions = [
-        f"a picture of {row['productDisplayName']}. A {row['baseColour']} {row['articleType']}."
+        f"{row['productDisplayName']}. A {row['baseColour']} {row['articleType']}."
         for _, row in metadata.iterrows()
     ]
-    inputs = processor(text=descriptions, return_tensors="pt", padding=True, truncation=True)
-    with torch.no_grad():
-        text_embs = model.get_text_features(**inputs).pooler_output
-    text_embs = text_embs / text_embs.norm(dim=-1, keepdim=True)
-    text_embs = text_embs.numpy()
+    text_embs = encode_texts(descriptions, model, processor)
 
     all_embs = np.concatenate([image_embs, text_embs])
 
