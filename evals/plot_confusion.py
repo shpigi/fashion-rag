@@ -1,3 +1,5 @@
+import argparse
+
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.cluster.hierarchy import leaves_list, linkage
@@ -7,49 +9,50 @@ from fashion_rag.search import encode_text, load_bq_index, load_model, local_sea
 K = 5
 
 
-def main():
-    model, processor = load_model()
-    print("Loading embeddings from BQ...")
-    embeddings, metadata = load_bq_index()
+def build_confusion(metadata, embeddings, model, processor, field):
+    values = sorted(metadata[field].unique())
+    val_to_idx = {v: i for i, v in enumerate(values)}
+    n = len(values)
 
-    article_types = sorted(metadata["articleType"].unique())
-    type_to_idx = {t: i for i, t in enumerate(article_types)}
-    n = len(article_types)
-
-    # For each type, query with each available colour and aggregate retrieved types
     confusion = np.zeros((n, n))
     query_counts = np.zeros(n)
 
-    colours = sorted(metadata["baseColour"].unique())
-    for atype in article_types:
-        for colour in colours:
-            available = len(metadata[(metadata["articleType"] == atype) & (metadata["baseColour"] == colour)])
+    other_field = "baseColour" if field == "articleType" else "articleType"
+    other_values = sorted(metadata[other_field].unique())
+
+    for val in values:
+        for other in other_values:
+            available = len(metadata[(metadata[field] == val) & (metadata[other_field] == other)])
             if available == 0:
                 continue
 
-            query = f"A product image showing a {colour} {atype}"
+            if field == "articleType":
+                query = f"A product image showing a {other} {val}"
+            else:
+                query = f"A product image showing a {val} {other}"
+
             query_emb = encode_text(query, model, processor)
             results = local_search(query_emb, embeddings, metadata, k=K)
 
             for _, row in results.iterrows():
-                confusion[type_to_idx[atype], type_to_idx[row["articleType"]]] += 1
-            query_counts[type_to_idx[atype]] += len(results)
+                confusion[val_to_idx[val], val_to_idx[row[field]]] += 1
+            query_counts[val_to_idx[val]] += len(results)
 
-    # Normalize rows to fractions
     row_sums = query_counts[:, None]
     row_sums[row_sums == 0] = 1
     confusion_pct = confusion / row_sums
 
+    return confusion_pct, values
+
+
+def plot_confusion(confusion_pct, labels, field, out):
     # Cluster by row similarity, apply same order to both axes
     Z = linkage(confusion_pct, method="ward")
     order = leaves_list(Z)
     confusion_pct = confusion_pct[order][:, order]
-    article_types = [article_types[i] for i in order]
+    labels = [labels[i] for i in order]
+    n = len(labels)
 
-    # ==============================================================================
-    # Plot
-
-    # Show zero cells as grey
     masked = np.ma.masked_where(confusion_pct == 0, confusion_pct)
     cmap = plt.colormaps.get_cmap("YlOrRd").copy()
     cmap.set_bad(color="0.92")
@@ -59,18 +62,17 @@ def main():
 
     ax.set_xticks(range(n))
     ax.set_yticks(range(n))
-    ax.set_xticklabels(article_types, rotation=45, ha="right", fontsize=8)
-    ax.set_yticklabels(article_types, fontsize=8)
-    ax.set_xlabel("articleType of retrieved images")
-    ax.set_ylabel("articleType in text query")
-    ax.set_title(f"Retrieval confusion (fraction of top-{K} results)")
+    ax.set_xticklabels(labels, rotation=45, ha="right", fontsize=8)
+    ax.set_yticklabels(labels, fontsize=8)
+    ax.set_xlabel(f"{field} of retrieved images")
+    ax.set_ylabel(f"{field} in text query")
+    ax.set_title(f"Retrieval confusion by {field} (fraction of top-{K} results)")
 
     ax.set_xticks([x - 0.5 for x in range(n + 1)], minor=True)
     ax.set_yticks([y - 0.5 for y in range(n + 1)], minor=True)
     ax.grid(which="minor", color="grey", linewidth=0.3, alpha=0.5)
     ax.tick_params(which="minor", length=0)
 
-    # Annotate cells with values > 0.05
     for i in range(n):
         for j in range(n):
             val = confusion_pct[i, j]
@@ -80,10 +82,27 @@ def main():
 
     fig.colorbar(im, ax=ax, shrink=0.8)
     plt.tight_layout()
-
-    out = "eval-outputs/retrieval_confusion.png"
     plt.savefig(out, dpi=150)
+    plt.close()
     print(f"Saved to {out}")
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--field", choices=["articleType", "baseColour", "both"], default="both")
+    args = parser.parse_args()
+
+    model, processor = load_model()
+    print("Loading embeddings from BQ...")
+    embeddings, metadata = load_bq_index()
+
+    fields = ["articleType", "baseColour"] if args.field == "both" else [args.field]
+
+    for field in fields:
+        print(f"Building {field} confusion...")
+        confusion_pct, labels = build_confusion(metadata, embeddings, model, processor, field)
+        out = f"eval-outputs/confusion_{field}.png"
+        plot_confusion(confusion_pct, labels, field, out)
 
 
 if __name__ == "__main__":

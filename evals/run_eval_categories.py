@@ -1,8 +1,24 @@
+DESCRIPTION = """\
+Category retrieval eval: for each (baseColour, articleType) combination in the
+metadata, encode "{colour} {articleType}" as a CLIP text query and retrieve
+the top-K most similar images from the embedding index.
+
+Metrics:
+  MRR@K         — Mean Reciprocal Rank: average of 1/rank of the first result
+                  matching both colour and type. Higher = correct items appear
+                  earlier in the results.
+  MRR@K(colour) — MRR considering only colour match.
+  MRR@K(type)   — MRR considering only articleType match.
+  Recall@K      — Fraction of available matching items found in top-K,
+                  averaged across queries. Denominator is min(K, available)
+                  so rare categories are not penalised.
+"""
+
 import argparse
 
 import pandas as pd
 
-from fashion_rag.search import encode_text, load_bq_index, load_model, local_search
+from fashion_rag.search import encode_texts, load_bq_index, load_model, local_search
 
 MIN_ITEMS_FOR_QUERY = 1
 
@@ -56,9 +72,11 @@ def main():
 
     k = args.k
 
+    query_texts = [q["query"] for q in queries]
+    all_embs = encode_texts(query_texts, model, processor)
+
     results_list = []
-    for q in queries:
-        query_emb = encode_text(q["query"], model, processor)
+    for q, query_emb in zip(queries, all_embs):
         topk = local_search(query_emb, embeddings, metadata, k=k)
         ev = evaluate_results(topk, q["expected"])
         recall_denom = min(k, q["available"])
@@ -90,9 +108,9 @@ def main():
     report = "\n".join(lines)
     print(report)
 
-    out = "eval-outputs/eval_report.txt"
+    out = "eval-outputs/eval_categories.txt"
     with open(out, "w") as f:
-        f.write(report + "\n")
+        f.write(report + "\n\n" + DESCRIPTION)
     print(f"\nSaved to {out}")
 
 
