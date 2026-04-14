@@ -4,15 +4,17 @@ from kfp import compiler, dsl
 
 from fashion_rag.config import GCP_PROJECT, GCP_REGION
 from vertex.components.embed_shard import embed_shard
+from vertex.components.evaluate import evaluate
 from vertex.components.resolve_ids import resolve_ids
 
 NUM_SHARDS = 2
+EVAL_K = 10
 
 
 @dsl.pipeline(name="clip-embed-parallel")
 def clip_embed_pipeline(recreate: bool = True):
     resolve_task = resolve_ids(recreate=recreate)
-    resolve_task.set_caching_options(False)
+    # resolve_task.set_caching_options(False)
 
     with dsl.ParallelFor(
         items=list(range(NUM_SHARDS)),
@@ -23,11 +25,16 @@ def clip_embed_pipeline(recreate: bool = True):
             shard_index=shard_index,
             num_shards=NUM_SHARDS,
         )
-        embed_task.set_caching_options(False)
+        # embed_task.set_caching_options(False)
         embed_task.set_cpu_limit("4")
         embed_task.set_memory_limit("16G")
         # embed_task.set_accelerator_type("NVIDIA_TESLA_T4")
         # embed_task.set_accelerator_limit(1)
+
+    eval_task = evaluate(k=EVAL_K)
+    eval_task.after(embed_task)
+    eval_task.set_cpu_limit("4")
+    eval_task.set_memory_limit("8G")
 
 
 if __name__ == "__main__":

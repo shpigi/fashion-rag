@@ -13,6 +13,8 @@ dependencies = [
     "google-cloud-bigquery",
     "google-cloud-storage",
     "db-dtypes",
+    "scikit-learn>=1.8.0",
+    "matplotlib>=3.10.8",
 ]
 
 [project.optional-dependencies]
@@ -27,6 +29,10 @@ app = [
 vertex = [
     "kfp",
     "google-cloud-aiplatform",
+]
+eval = [
+    "fashion-rag[ml]",
+    "umap-learn",
 ]
 
 [build-system]
