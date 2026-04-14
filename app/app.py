@@ -2,7 +2,7 @@ import streamlit as st
 from google.cloud import bigquery
 
 from fashion_rag.config import BQ_METADATA_TABLE, GCP_PROJECT, IMAGES_DIR
-from fashion_rag.search import encode_text, get_embedding, load_model, search
+from fashion_rag.search import encode_text, load_model, search, search_by_id
 
 EVAL_QUERIES = [
     {"query": "red dresses", "expected": {"baseColour": "Red", "articleType": "Dresses"}},
@@ -81,13 +81,11 @@ def main():
         item_id = st.session_state["similar_to"]
         item = metadata[metadata["id"] == item_id].iloc[0]
 
-        query_emb = get_embedding(item_id)
-
         st.subheader(f"Similar to: {item['productDisplayName']}")
         st.button("Back to search",
                   on_click=lambda: st.session_state.pop("similar_to", None))
 
-        results = search(query_emb, k=k)
+        results = search_by_id(item_id, k=k)
         display_results(results, key_prefix="sim_")
         return
 
