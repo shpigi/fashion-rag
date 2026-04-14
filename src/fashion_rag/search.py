@@ -60,6 +60,29 @@ def local_search(query_emb, embeddings, metadata, k=10):
     return results
 
 
+def search_by_id(item_id, k=10):
+    client = bigquery.Client(project=GCP_PROJECT)
+    sql = f"""
+    SELECT
+        base.id,
+        distance,
+        meta.* EXCEPT(id)
+    FROM VECTOR_SEARCH(
+        TABLE `{BQ_EMBEDDINGS_TABLE}`,
+        'embedding',
+        (SELECT embedding FROM `{BQ_EMBEDDINGS_TABLE}` WHERE id = {item_id}),
+        top_k => {k},
+        distance_type => 'COSINE'
+    )
+    JOIN `{BQ_METADATA_TABLE}` meta ON base.id = meta.id
+    ORDER BY distance ASC
+    """
+    df = client.query(sql).to_dataframe()
+    df["score"] = 1.0 - df["distance"]
+    df = df.drop(columns=["distance"])
+    return df
+
+
 def search(query_emb, k=10):
     client = bigquery.Client(project=GCP_PROJECT)
     emb_str = ", ".join(str(float(x)) for x in query_emb)
