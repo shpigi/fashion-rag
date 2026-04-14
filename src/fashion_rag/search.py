@@ -60,6 +60,14 @@ def local_search(query_emb, embeddings, metadata, k=10):
     return results
 
 
+def get_embedding(item_id):
+    client = bigquery.Client(project=GCP_PROJECT)
+    row = client.query(
+        f"SELECT embedding FROM `{BQ_EMBEDDINGS_TABLE}` WHERE id = {item_id}"
+    ).to_dataframe()
+    return np.array(row["embedding"].iloc[0])
+
+
 def search(query_emb, k=10):
     client = bigquery.Client(project=GCP_PROJECT)
     emb_str = ", ".join(str(float(x)) for x in query_emb)
