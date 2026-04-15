@@ -40,6 +40,14 @@ def encode_text(query, model, processor):
     return encode_texts([query], model, processor)[0]
 
 
+def encode_image(image, model, processor):
+    inputs = processor(images=[image], return_tensors="pt").to(DEVICE)
+    with torch.no_grad():
+        emb = model.get_image_features(**inputs).pooler_output
+    emb = emb / emb.norm(dim=-1, keepdim=True)
+    return emb[0].cpu().numpy()
+
+
 def load_bq_index():
     client = bigquery.Client(project=GCP_PROJECT)
     metadata = client.query(f"""

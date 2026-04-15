@@ -7,6 +7,7 @@ BQ_DATASET := fashion
 AR_REPO        := $(REGION)-docker.pkg.dev/$(PROJECT)/containers
 APP_IMAGE      := $(AR_REPO)/fashion-rag-app:latest
 COMPONENT_IMAGE := $(AR_REPO)/fashion-rag-component:latest
+API_IMAGE      := $(AR_REPO)/fashion-rag-api:latest
 APP_SA         := fashion-rag-app@$(PROJECT).iam.gserviceaccount.com
 
 .PHONY: bucket upload-images upload-csv bq-dataset bq-load upload bq \
@@ -15,6 +16,7 @@ APP_SA         := fashion-rag-app@$(PROJECT).iam.gserviceaccount.com
         docker-app docker-push-app deploy-app \
         docker-component docker-push-component \
         pipeline-compile pipeline-submit pipeline \
+        docker-api docker-push-api deploy-api api-docker \
         embed search app app-docker
 
 # =============================================================================
@@ -115,6 +117,25 @@ pipeline: docker-push-component pipeline-submit
 deploy-app: docker-push-app
 	gcloud run deploy fashion-rag \
 		--image $(APP_IMAGE) \
+		--region $(REGION) \
+		--project $(PROJECT) \
+		--service-account $(APP_SA) \
+		--memory 2Gi \
+		--port 8080 \
+		--allow-unauthenticated
+
+docker-api:
+	docker build -f api_server/Dockerfile -t $(API_IMAGE) .
+
+docker-push-api: docker-api
+	docker push $(API_IMAGE)
+
+api-docker: docker-api
+	docker run --rm -p 8080:8080 -v $(HOME)/.config/gcloud:/root/.config/gcloud:ro $(API_IMAGE)
+
+deploy-api: docker-push-api
+	gcloud run deploy fashion-rag-api \
+		--image $(API_IMAGE) \
 		--region $(REGION) \
 		--project $(PROJECT) \
 		--service-account $(APP_SA) \
