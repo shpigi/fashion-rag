@@ -7,7 +7,8 @@ BQ_DATASET = "fashion"
 BQ_METADATA_TABLE = f"{GCP_PROJECT}.{BQ_DATASET}.metadata"
 BQ_EMBEDDINGS_TABLE = f"{GCP_PROJECT}.{BQ_DATASET}.clip_embeddings"
 
-BUCKET = "gs://fashion-data-500"
+GCS_BUCKET = "fashion-data-500"
+BUCKET = f"gs://{GCS_BUCKET}"
 IMAGES_DIR = UPath(BUCKET) / "images"
 
 MODEL_NAME = "openai/clip-vit-base-patch32"

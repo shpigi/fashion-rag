@@ -38,6 +38,14 @@ test = [
     "fashion-rag[ml]",
     "pytest",
 ]
+api = [
+    "fashion-rag[ml]",
+    "fastapi",
+    "uvicorn[standard]",
+    "google-cloud-storage",
+    "python-multipart",
+    "httpx",
+]
 dev = [
     "fashion-rag[test]",
     "ruff",
