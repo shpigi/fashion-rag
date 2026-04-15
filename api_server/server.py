@@ -57,9 +57,7 @@ async def get_image(image_id: int):
 
 
 @app.get("/search/text")
-async def search_text(
-    q: str = Query(..., description="Text query"), k: int = Query(5, ge=1, le=50)
-):
+def search_text(q: str = Query(..., description="Text query"), k: int = Query(5, ge=1, le=50)):
     """Search the catalog by text description."""
     emb = encode_text(q, app.state.model, app.state.processor)
     df = bq_search(emb, k=k)
@@ -67,9 +65,9 @@ async def search_text(
 
 
 @app.post("/search/image")
-async def search_image(file: UploadFile = File(...), k: int = Query(5, ge=1, le=50)):
+def search_image(file: UploadFile = File(...), k: int = Query(5, ge=1, le=50)):
     """Search the catalog by uploading an image."""
-    data = await file.read()
+    data = file.file.read()
     image = Image.open(io.BytesIO(data)).convert("RGB")
     query_emb = encode_image(image, app.state.model, app.state.processor)
     df = bq_search(query_emb, k=k)
