@@ -23,8 +23,9 @@ ml = [
     "transformers",
 ]
 app = [
-    "fashion-rag[ml]",
     "streamlit",
+    "httpx",
+    "pandas",
 ]
 vertex = [
     "kfp",

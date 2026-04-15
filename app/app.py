@@ -1,8 +1,10 @@
-import streamlit as st
-from google.cloud import bigquery
+import os
 
-from fashion_rag.config import BQ_METADATA_TABLE, GCP_PROJECT, IMAGES_DIR
-from fashion_rag.search import encode_text, load_model, search, search_by_id
+import httpx
+import pandas as pd
+import streamlit as st
+
+API_URL = os.environ.get("FASHION_API_URL", "http://localhost:8080")
 
 EVAL_QUERIES = [
     {"query": "red dresses", "expected": {"baseColour": "Red", "articleType": "Dresses"}},
@@ -27,22 +29,34 @@ METADATA_FIELDS = ["baseColour", "articleType", "gender", "masterCategory"]
 
 
 @st.cache_resource
-def cached_model():
-    return load_model()
+def api_client():
+    return httpx.Client(base_url=API_URL, timeout=30)
 
 
-@st.cache_resource
-def cached_metadata():
-    client = bigquery.Client(project=GCP_PROJECT)
-    return client.query(f"SELECT * FROM `{BQ_METADATA_TABLE}`").to_dataframe()
+@st.cache_data
+def cached_metadata_values():
+    resp = api_client().get("/metadata/values")
+    resp.raise_for_status()
+    return resp.json()
 
 
-def extract_expected(query, metadata):
+def search_text(query, k):
+    resp = api_client().get("/search/text", params={"q": query, "k": k})
+    resp.raise_for_status()
+    return pd.DataFrame(resp.json())
+
+
+def search_similar(item_id, k):
+    resp = api_client().get(f"/search/similar/{item_id}", params={"k": k})
+    resp.raise_for_status()
+    return pd.DataFrame(resp.json())
+
+
+def extract_expected(query, metadata_values):
     tokens = query.lower().split()
     expected = {}
     for field in ["baseColour", "articleType"]:
-        values = metadata[field].dropna().unique()
-        for val in values:
+        for val in metadata_values.get(field, []):
             if val.lower() in tokens or all(t in tokens for t in val.lower().split()):
                 expected[field] = val
                 break
@@ -53,10 +67,9 @@ def display_results(results, key_prefix="", expected=None):
     cols = st.columns(min(5, len(results)))
     for i, (_, row) in enumerate(results.iterrows()):
         col = cols[i % len(cols)]
-        img_path = IMAGES_DIR / f"{row['id']}.jpg"
 
         with col:
-            st.image(img_path.read_bytes(), use_container_width=True)
+            st.image(f"{API_URL}/images/{row['id']}.jpg", use_container_width=True)
             parts = []
             for field in METADATA_FIELDS:
                 value = str(row.get(field, ""))
@@ -80,20 +93,19 @@ def main():
     st.set_page_config(page_title="Fashion RAG", layout="wide")
     st.title("Fashion Image Retrieval")
 
-    model, processor = cached_model()
-    metadata = cached_metadata()
+    metadata_values = cached_metadata_values()
 
     k = st.sidebar.slider("Top-K results", min_value=3, max_value=20, value=10)
 
     # Similar image mode
     if "similar_to" in st.session_state:
         item_id = st.session_state["similar_to"]
-        item = metadata[metadata["id"] == item_id].iloc[0]
+        results = search_similar(item_id, k=k)
+        item_name = results.iloc[0]["productDisplayName"] if not results.empty else str(item_id)
 
-        st.subheader(f"Similar to: {item['productDisplayName']}")
+        st.subheader(f"Similar to: {item_name}")
         st.button("Back to search", on_click=lambda: st.session_state.pop("similar_to", None))
 
-        results = search_by_id(item_id, k=k)
         display_results(results, key_prefix="sim_")
         return
 
@@ -108,14 +120,13 @@ def main():
         expected = options[selected]["expected"]
     else:
         query = st.text_input("Search for fashion items", placeholder="e.g. red summer dress")
-        expected = extract_expected(query, metadata) if query else None
+        expected = extract_expected(query, metadata_values) if query else None
 
     if not query:
         st.info("Enter a query to search.")
         return
 
-    query_emb = encode_text(query, model, processor)
-    results = search(query_emb, k=k)
+    results = search_text(query, k=k)
 
     if expected:
         match_all = sum(
