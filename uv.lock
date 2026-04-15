@@ -645,6 +645,7 @@ dependencies = [
 api = [
     { name = "fastapi" },
     { name = "google-cloud-storage" },
+    { name = "httpx" },
     { name = "python-multipart" },
     { name = "torch" },
     { name = "transformers" },
@@ -695,6 +696,7 @@ requires-dist = [
     { name = "google-cloud-bigquery" },
     { name = "google-cloud-storage" },
     { name = "google-cloud-storage", marker = "extra == 'api'" },
+    { name = "httpx", marker = "extra == 'api'" },
     { name = "kfp", marker = "extra == 'vertex'" },
     { name = "matplotlib", specifier = ">=3.10.8" },
     { name = "numpy" },

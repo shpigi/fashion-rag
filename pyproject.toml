@@ -44,6 +44,7 @@ api = [
     "uvicorn[standard]",
     "google-cloud-storage",
     "python-multipart",
+    "httpx",
 ]
 dev = [
     "fashion-rag[test]",

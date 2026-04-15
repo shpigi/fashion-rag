@@ -11,7 +11,8 @@ RUN uv sync --frozen --no-dev --extra api
 
 COPY api_server/ api_server/
 
-RUN .venv/bin/python -c "from transformers import CLIPModel, CLIPProcessor; CLIPModel.from_pretrained('openai/clip-vit-base-patch32'); CLIPProcessor.from_pretrained('openai/clip-vit-base-patch32')"
+# Pre-download model weights into the image to avoid cold-start downloads
+RUN .venv/bin/python -c "from transformers import CLIPModel, CLIPProcessor; from fashion_rag.config import MODEL_NAME; CLIPModel.from_pretrained(MODEL_NAME); CLIPProcessor.from_pretrained(MODEL_NAME)"
 
 ENV PATH="/app/.venv/bin:$PATH"
 EXPOSE 8080

@@ -6,11 +6,9 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from google.cloud import storage
 from PIL import Image
 
-from fashion_rag.config import GCP_PROJECT
+from fashion_rag.config import GCP_PROJECT, GCS_BUCKET
 from fashion_rag.search import encode_image, encode_text, load_model
 from fashion_rag.search import search as bq_search
-
-GCS_BUCKET = "fashion-data-500"
 
 
 @asynccontextmanager
