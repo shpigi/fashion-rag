@@ -1,3 +1,5 @@
+from typing import BinaryIO
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -6,7 +8,7 @@ from google.cloud import bigquery
 from fashion_rag.config import BQ_METADATA_TABLE, GCP_PROJECT
 
 
-def plot_distribution(metadata, out_path):
+def plot_distribution(metadata: pd.DataFrame, out_path: str | BinaryIO) -> None:
     ct = pd.crosstab(metadata["articleType"], metadata["baseColour"], normalize="all")
     types = ct.index.tolist()
     colours = ct.columns.tolist()
@@ -52,7 +54,7 @@ def plot_distribution(metadata, out_path):
     plt.close()
 
 
-def main():
+def main() -> None:
     client = bigquery.Client(project=GCP_PROJECT)
     metadata = client.query(f"SELECT * FROM `{BQ_METADATA_TABLE}`").to_dataframe()
 

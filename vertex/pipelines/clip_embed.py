@@ -12,7 +12,7 @@ EVAL_K = 10
 
 
 @dsl.pipeline(name="clip-embed-parallel")
-def clip_embed_pipeline(recreate: bool = True):
+def clip_embed_pipeline(recreate: bool = True) -> None:
     resolve_task = resolve_ids(recreate=recreate)
     # resolve_task.set_caching_options(False)
 

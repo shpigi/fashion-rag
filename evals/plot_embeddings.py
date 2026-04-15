@@ -6,7 +6,7 @@ import numpy as np
 from fashion_rag.search import encode_texts, load_bq_index, load_model
 
 
-def reduce(embeddings, method="umap"):
+def reduce(embeddings: np.ndarray, method: str = "umap") -> np.ndarray:
     if method == "umap":
         from umap import UMAP
 
@@ -17,7 +17,7 @@ def reduce(embeddings, method="umap"):
         return TSNE(n_components=2, perplexity=30, random_state=42).fit_transform(embeddings)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--method", choices=["umap", "tsne"], default="umap")
     args = parser.parse_args()

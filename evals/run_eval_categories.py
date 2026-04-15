@@ -15,21 +15,29 @@ Metrics:
 """
 
 import argparse
+from typing import Any, BinaryIO
 
 import numpy as np
 import pandas as pd
+from transformers import CLIPModel, CLIPProcessor
 
 from fashion_rag.search import encode_texts, load_bq_index, load_model, local_search
 
 MIN_ITEMS_FOR_QUERY = 1
 
 
-def reciprocal_rank(matches):
+def reciprocal_rank(matches: pd.Series) -> float:
     hits = matches.values.nonzero()[0]
     return 1.0 / (hits[0] + 1) if len(hits) > 0 else 0.0
 
 
-def run_category_eval(embeddings, metadata, model, processor, k=10):
+def run_category_eval(
+    embeddings: np.ndarray,
+    metadata: pd.DataFrame,
+    model: CLIPModel,
+    processor: CLIPProcessor,
+    k: int = 10,
+) -> tuple[pd.DataFrame, dict[str, float], dict[str, Any], dict[str, Any]]:
     combos = metadata.groupby(["baseColour", "articleType"]).size().reset_index(name="count")
     combos = combos[combos["count"] >= MIN_ITEMS_FOR_QUERY]
 
@@ -80,7 +88,13 @@ def run_category_eval(embeddings, metadata, model, processor, k=10):
     return df, summary, type_confusion, colour_confusion
 
 
-def _build_confusion(queries, all_embs, metadata, embeddings, field):
+def _build_confusion(
+    queries: list[dict[str, Any]],
+    all_embs: np.ndarray,
+    metadata: pd.DataFrame,
+    embeddings: np.ndarray,
+    field: str,
+) -> dict[str, Any]:
     values = sorted(metadata[field].unique())
     val_to_idx = {v: i for i, v in enumerate(values)}
     n = len(values)
@@ -99,7 +113,7 @@ def _build_confusion(queries, all_embs, metadata, embeddings, field):
     return {"labels": values, "matrix": confusion / row_sums}
 
 
-def plot_confusion(confusion, title, out_path):
+def plot_confusion(confusion: dict[str, Any], title: str, out_path: str | BinaryIO) -> None:
     import matplotlib.pyplot as plt
     from scipy.cluster.hierarchy import leaves_list, linkage
 
@@ -152,7 +166,7 @@ def plot_confusion(confusion, title, out_path):
     plt.close()
 
 
-def format_report(df, summary, k):
+def format_report(df: pd.DataFrame, summary: dict[str, float], k: int) -> str:
     df = df.sort_values("rr", ascending=False)
     lines = []
     lines.append(
@@ -172,7 +186,7 @@ def format_report(df, summary, k):
     return "\n".join(lines)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--k", type=int, default=10)
     args = parser.parse_args()

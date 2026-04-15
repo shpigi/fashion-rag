@@ -29,32 +29,32 @@ METADATA_FIELDS = ["baseColour", "articleType", "gender", "masterCategory"]
 
 
 @st.cache_resource
-def api_client():
+def api_client() -> httpx.Client:
     return httpx.Client(base_url=API_URL, timeout=30)
 
 
 @st.cache_data
-def cached_metadata_values():
+def cached_metadata_values() -> dict[str, list[str]]:
     resp = api_client().get("/metadata/values")
     resp.raise_for_status()
     return resp.json()
 
 
-def search_text(query, k):
+def search_text(query: str, k: int) -> pd.DataFrame:
     resp = api_client().get("/search/text", params={"q": query, "k": k})
     resp.raise_for_status()
     return pd.DataFrame(resp.json())
 
 
-def search_similar(item_id, k):
+def search_similar(item_id: int, k: int) -> pd.DataFrame:
     resp = api_client().get(f"/search/similar/{item_id}", params={"k": k})
     resp.raise_for_status()
     return pd.DataFrame(resp.json())
 
 
-def extract_expected(query, metadata_values):
+def extract_expected(query: str, metadata_values: dict[str, list[str]]) -> dict[str, str]:
     tokens = query.lower().split()
-    expected = {}
+    expected: dict[str, str] = {}
     for field in ["baseColour", "articleType"]:
         for val in metadata_values.get(field, []):
             if val.lower() in tokens or all(t in tokens for t in val.lower().split()):
@@ -63,7 +63,9 @@ def extract_expected(query, metadata_values):
     return expected
 
 
-def display_results(results, key_prefix="", expected=None):
+def display_results(
+    results: pd.DataFrame, key_prefix: str = "", expected: dict[str, str] | None = None
+) -> None:
     cols = st.columns(min(5, len(results)))
     for i, (_, row) in enumerate(results.iterrows()):
         col = cols[i % len(cols)]
@@ -89,7 +91,7 @@ def display_results(results, key_prefix="", expected=None):
             )
 
 
-def main():
+def main() -> None:
     st.set_page_config(page_title="Fashion RAG", layout="wide")
     st.title("Fashion Image Retrieval")
 

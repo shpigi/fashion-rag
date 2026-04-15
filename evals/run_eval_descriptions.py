@@ -25,14 +25,14 @@ import pandas as pd
 from fashion_rag.search import encode_texts, load_bq_index, load_model, local_search
 
 
-def reciprocal_rank(results, target_id):
+def reciprocal_rank(results: pd.DataFrame, target_id: int) -> float:
     for rank, (_, row) in enumerate(results.iterrows(), 1):
         if row["id"] == target_id:
             return 1.0 / rank
     return 0.0
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--k", type=int, default=10)
     args = parser.parse_args()

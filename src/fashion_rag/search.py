@@ -1,8 +1,10 @@
 import sys
 
 import numpy as np
+import pandas as pd
 import torch
 from google.cloud import bigquery
+from PIL import Image
 from transformers import CLIPModel, CLIPProcessor
 
 from fashion_rag.config import (
@@ -15,14 +17,16 @@ from fashion_rag.config import (
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 
-def load_model():
+def load_model() -> tuple[CLIPModel, CLIPProcessor]:
     model = CLIPModel.from_pretrained(MODEL_NAME).to(DEVICE)
     processor = CLIPProcessor.from_pretrained(MODEL_NAME)
     model.eval()
     return model, processor
 
 
-def encode_texts(queries, model, processor, batch_size=32):
+def encode_texts(
+    queries: list[str], model: CLIPModel, processor: CLIPProcessor, batch_size: int = 32
+) -> np.ndarray:
     all_embs = []
     for i in range(0, len(queries), batch_size):
         batch = [f"a photo of {q}" for q in queries[i : i + batch_size]]
@@ -36,11 +40,11 @@ def encode_texts(queries, model, processor, batch_size=32):
     return np.concatenate(all_embs)
 
 
-def encode_text(query, model, processor):
+def encode_text(query: str, model: CLIPModel, processor: CLIPProcessor) -> np.ndarray:
     return encode_texts([query], model, processor)[0]
 
 
-def encode_image(image, model, processor):
+def encode_image(image: Image.Image, model: CLIPModel, processor: CLIPProcessor) -> np.ndarray:
     inputs = processor(images=[image], return_tensors="pt").to(DEVICE)
     with torch.no_grad():
         emb = model.get_image_features(**inputs).pooler_output
@@ -48,7 +52,7 @@ def encode_image(image, model, processor):
     return emb[0].cpu().numpy()
 
 
-def load_bq_index():
+def load_bq_index() -> tuple[np.ndarray, pd.DataFrame]:
     client = bigquery.Client(project=GCP_PROJECT)
     metadata = client.query(f"""
         SELECT e.id, e.embedding, m.* EXCEPT(id)
@@ -59,7 +63,9 @@ def load_bq_index():
     return embeddings, metadata
 
 
-def local_search(query_emb, embeddings, metadata, k=10):
+def local_search(
+    query_emb: np.ndarray, embeddings: np.ndarray, metadata: pd.DataFrame, k: int = 10
+) -> pd.DataFrame:
     scores = embeddings @ query_emb
     top_idx = np.argsort(scores)[::-1][:k]
     results = metadata.iloc[top_idx].copy()
@@ -67,7 +73,7 @@ def local_search(query_emb, embeddings, metadata, k=10):
     return results
 
 
-def get_metadata_values():
+def get_metadata_values() -> dict[str, list[str]]:
     """Return sorted unique values for key metadata columns."""
     client = bigquery.Client(project=GCP_PROJECT)
     values = {}
@@ -80,7 +86,7 @@ def get_metadata_values():
     return values
 
 
-def search_by_id(item_id, k=10):
+def search_by_id(item_id: int, k: int = 10) -> pd.DataFrame:
     client = bigquery.Client(project=GCP_PROJECT)
     sql = f"""
     SELECT
@@ -103,7 +109,7 @@ def search_by_id(item_id, k=10):
     return df
 
 
-def search(query_emb, k=10):
+def search(query_emb: np.ndarray, k: int = 10) -> pd.DataFrame:
     client = bigquery.Client(project=GCP_PROJECT)
     emb_str = ", ".join(str(float(x)) for x in query_emb)
     sql = f"""
@@ -127,7 +133,7 @@ def search(query_emb, k=10):
     return df
 
 
-def main():
+def main() -> None:
     query = " ".join(sys.argv[1:]) or "red dress"
     model, processor = load_model()
     query_emb = encode_text(query, model, processor)
