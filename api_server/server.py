@@ -4,11 +4,17 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, File, Query, UploadFile
 from fastapi.responses import JSONResponse, StreamingResponse
-from google.cloud import bigquery, storage
+from google.cloud import storage
 from PIL import Image
 
-from fashion_rag.config import BQ_METADATA_TABLE, GCP_PROJECT, GCS_BUCKET
-from fashion_rag.search import encode_image, encode_text, load_model, search_by_id
+from fashion_rag.config import GCP_PROJECT, GCS_BUCKET
+from fashion_rag.search import (
+    encode_image,
+    encode_text,
+    get_metadata_values,
+    load_model,
+    search_by_id,
+)
 from fashion_rag.search import search as bq_search
 
 
@@ -18,12 +24,7 @@ async def lifespan(app: FastAPI):
     app.state.model = model
     app.state.processor = processor
     app.state.gcs = storage.Client(project=GCP_PROJECT)
-    client = bigquery.Client(project=GCP_PROJECT)
-    df = client.query(f"SELECT baseColour, articleType FROM `{BQ_METADATA_TABLE}`").to_dataframe()
-    app.state.metadata_values = {
-        "baseColour": sorted(df["baseColour"].dropna().unique().tolist()),
-        "articleType": sorted(df["articleType"].dropna().unique().tolist()),
-    }
+    app.state.metadata_values = get_metadata_values()
     yield
 
 

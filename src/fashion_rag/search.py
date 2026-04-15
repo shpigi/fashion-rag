@@ -67,6 +67,19 @@ def local_search(query_emb, embeddings, metadata, k=10):
     return results
 
 
+def get_metadata_values():
+    """Return sorted unique values for key metadata columns."""
+    client = bigquery.Client(project=GCP_PROJECT)
+    values = {}
+    for col in ("baseColour", "articleType"):
+        rows = client.query(
+            f"SELECT DISTINCT `{col}` FROM `{BQ_METADATA_TABLE}`"
+            f" WHERE `{col}` IS NOT NULL ORDER BY 1"
+        ).result()
+        values[col] = [row[0] for row in rows]
+    return values
+
+
 def search_by_id(item_id, k=10):
     client = bigquery.Client(project=GCP_PROJECT)
     sql = f"""
