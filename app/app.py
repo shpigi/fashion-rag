@@ -7,12 +7,18 @@ from fashion_rag.search import encode_text, load_model, search, search_by_id
 EVAL_QUERIES = [
     {"query": "red dresses", "expected": {"baseColour": "Red", "articleType": "Dresses"}},
     {"query": "blue jeans", "expected": {"baseColour": "Blue", "articleType": "Jeans"}},
-    {"query": "black casual shoes", "expected": {"baseColour": "Black", "articleType": "Casual Shoes"}},
+    {
+        "query": "black casual shoes",
+        "expected": {"baseColour": "Black", "articleType": "Casual Shoes"},
+    },
     {"query": "white tshirts", "expected": {"baseColour": "White", "articleType": "Tshirts"}},
     {"query": "black handbags", "expected": {"baseColour": "Black", "articleType": "Handbags"}},
     {"query": "pink tops", "expected": {"baseColour": "Pink", "articleType": "Tops"}},
     {"query": "brown heels", "expected": {"baseColour": "Brown", "articleType": "Heels"}},
-    {"query": "green sports shoes", "expected": {"baseColour": "Green", "articleType": "Sports Shoes"}},
+    {
+        "query": "green sports shoes",
+        "expected": {"baseColour": "Green", "articleType": "Sports Shoes"},
+    },
     {"query": "black formal shirts", "expected": {"baseColour": "Black", "articleType": "Shirts"}},
     {"query": "yellow kurtas", "expected": {"baseColour": "Yellow", "articleType": "Kurtas"}},
 ]
@@ -63,8 +69,11 @@ def display_results(results, key_prefix="", expected=None):
                     parts.append(value)
             st.markdown(f"**{row['score']:.3f}** {' / '.join(parts)}")
 
-            st.button("Find similar", key=f"{key_prefix}similar_{i}",
-                      on_click=lambda id=int(row["id"]): st.session_state.update(similar_to=id))
+            st.button(
+                "Find similar",
+                key=f"{key_prefix}similar_{i}",
+                on_click=lambda id=int(row["id"]): st.session_state.update(similar_to=id),
+            )
 
 
 def main():
@@ -82,8 +91,7 @@ def main():
         item = metadata[metadata["id"] == item_id].iloc[0]
 
         st.subheader(f"Similar to: {item['productDisplayName']}")
-        st.button("Back to search",
-                  on_click=lambda: st.session_state.pop("similar_to", None))
+        st.button("Back to search", on_click=lambda: st.session_state.pop("similar_to", None))
 
         results = search_by_id(item_id, k=k)
         display_results(results, key_prefix="sim_")
@@ -111,7 +119,8 @@ def main():
 
     if expected:
         match_all = sum(
-            1 for _, row in results.iterrows()
+            1
+            for _, row in results.iterrows()
             if all(str(row[f]).lower() == v.lower() for f, v in expected.items())
         )
         precision = match_all / len(results)

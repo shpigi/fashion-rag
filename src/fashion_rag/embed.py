@@ -38,8 +38,7 @@ class ImageDataset(Dataset):
 def get_ids_to_embed(recreate=True):
     client = bigquery.Client(project=GCP_PROJECT)
     all_ids = [
-        row.id for row in
-        client.query(f"SELECT id FROM `{BQ_METADATA_TABLE}` ORDER BY id").result()
+        row.id for row in client.query(f"SELECT id FROM `{BQ_METADATA_TABLE}` ORDER BY id").result()
     ]
 
     if recreate:
@@ -47,8 +46,7 @@ def get_ids_to_embed(recreate=True):
 
     try:
         embedded = {
-            row.id for row in
-            client.query(f"SELECT id FROM `{BQ_EMBEDDINGS_TABLE}`").result()
+            row.id for row in client.query(f"SELECT id FROM `{BQ_EMBEDDINGS_TABLE}`").result()
         }
     except Exception:
         embedded = set()
@@ -60,10 +58,7 @@ def get_ids_to_embed(recreate=True):
 
 def write_embeddings(ids, embeddings, disposition="WRITE_APPEND"):
     client = bigquery.Client(project=GCP_PROJECT)
-    rows = [
-        {"id": int(pid), "embedding": emb.tolist()}
-        for pid, emb in zip(ids, embeddings)
-    ]
+    rows = [{"id": int(pid), "embedding": emb.tolist()} for pid, emb in zip(ids, embeddings)]
     job_config = bigquery.LoadJobConfig(
         write_disposition=disposition,
         schema=BQ_SCHEMA,

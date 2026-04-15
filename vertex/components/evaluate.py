@@ -14,9 +14,9 @@ def evaluate(
     import base64
     import io
 
-    from fashion_rag.search import load_bq_index, load_model
-    from evals.run_eval_categories import run_category_eval, plot_confusion
     from evals.plot_distribution import plot_distribution
+    from evals.run_eval_categories import plot_confusion, run_category_eval
+    from fashion_rag.search import load_bq_index, load_model
 
     model, processor = load_model()
     embeddings, metadata = load_bq_index()
@@ -36,10 +36,24 @@ def evaluate(
         return f'<h3>{title}</h3><img src="data:image/png;base64,{b64}" />'
 
     with open(type_confusion_out.path, "w") as f:
-        f.write(to_html("Retrieval confusion by articleType", plot_confusion, type_conf, "articleType (top-5)"))
+        f.write(
+            to_html(
+                "Retrieval confusion by articleType",
+                plot_confusion,
+                type_conf,
+                "articleType (top-5)",
+            )
+        )
 
     with open(colour_confusion_out.path, "w") as f:
-        f.write(to_html("Retrieval confusion by baseColour", plot_confusion, colour_conf, "baseColour (top-5)"))
+        f.write(
+            to_html(
+                "Retrieval confusion by baseColour",
+                plot_confusion,
+                colour_conf,
+                "baseColour (top-5)",
+            )
+        )
 
     with open(distribution_out.path, "w") as f:
         f.write(to_html("Dataset distribution", plot_distribution, metadata))
