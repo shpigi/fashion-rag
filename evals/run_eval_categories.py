@@ -36,11 +36,13 @@ def run_category_eval(embeddings, metadata, model, processor, k=10):
     queries = []
     for _, row in combos.iterrows():
         colour, atype, count = row["baseColour"], row["articleType"], row["count"]
-        queries.append({
-            "query": f"{colour} {atype}",
-            "expected": {"baseColour": colour, "articleType": atype},
-            "available": count,
-        })
+        queries.append(
+            {
+                "query": f"{colour} {atype}",
+                "expected": {"baseColour": colour, "articleType": atype},
+                "available": count,
+            }
+        )
 
     query_texts = [q["query"] for q in queries]
     all_embs = encode_texts(query_texts, model, processor)
@@ -52,14 +54,16 @@ def run_category_eval(embeddings, metadata, model, processor, k=10):
         type_match = topk["articleType"].str.lower() == q["expected"]["articleType"].lower()
         both_match = colour_match & type_match
 
-        per_query.append({
-            "query": q["query"],
-            "available": q["available"],
-            "rr": reciprocal_rank(both_match),
-            "rr_colour": reciprocal_rank(colour_match),
-            "rr_type": reciprocal_rank(type_match),
-            "r@k": both_match.sum() / min(k, q["available"]),
-        })
+        per_query.append(
+            {
+                "query": q["query"],
+                "available": q["available"],
+                "rr": reciprocal_rank(both_match),
+                "rr_colour": reciprocal_rank(colour_match),
+                "rr_type": reciprocal_rank(type_match),
+                "r@k": both_match.sum() / min(k, q["available"]),
+            }
+        )
 
     df = pd.DataFrame(per_query)
     summary = {
@@ -132,8 +136,15 @@ def plot_confusion(confusion, title, out_path):
         for j in range(n):
             val = matrix[i, j]
             if val > 0.05:
-                ax.text(j, i, f"{val:.2f}", ha="center", va="center", fontsize=6,
-                        color="white" if val > 0.5 else "black")
+                ax.text(
+                    j,
+                    i,
+                    f"{val:.2f}",
+                    ha="center",
+                    va="center",
+                    fontsize=6,
+                    color="white" if val > 0.5 else "black",
+                )
 
     fig.colorbar(ax.images[0], ax=ax, shrink=0.8)
     plt.tight_layout()
@@ -144,7 +155,9 @@ def plot_confusion(confusion, title, out_path):
 def format_report(df, summary, k):
     df = df.sort_values("rr", ascending=False)
     lines = []
-    lines.append(f"{'Query':<30} {'Avail':>5} {f'RR@{k}':>6} {'RR_col':>6} {'RR_typ':>6} {f'R@{k}':>6}")
+    lines.append(
+        f"{'Query':<30} {'Avail':>5} {f'RR@{k}':>6} {'RR_col':>6} {'RR_typ':>6} {f'R@{k}':>6}"
+    )
     lines.append("-" * 64)
     for _, r in df.iterrows():
         lines.append(
@@ -180,8 +193,16 @@ def main():
         f.write(report + "\n\n" + DESCRIPTION)
     print(f"\nSaved to {out}")
 
-    plot_confusion(type_conf, "Retrieval confusion by articleType (top-5)", "eval-outputs/confusion_articleType.png")
-    plot_confusion(colour_conf, "Retrieval confusion by baseColour (top-5)", "eval-outputs/confusion_baseColour.png")
+    plot_confusion(
+        type_conf,
+        "Retrieval confusion by articleType (top-5)",
+        "eval-outputs/confusion_articleType.png",
+    )
+    plot_confusion(
+        colour_conf,
+        "Retrieval confusion by baseColour (top-5)",
+        "eval-outputs/confusion_baseColour.png",
+    )
 
 
 if __name__ == "__main__":

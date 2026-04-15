@@ -43,24 +43,23 @@ def main():
 
     k = args.k
 
-    queries = [
-        f"{row['productDisplayName']}"
-        for _, row in metadata.iterrows()
-    ]
+    queries = [f"{row['productDisplayName']}" for _, row in metadata.iterrows()]
     all_embs = encode_texts(queries, model, processor)
 
     results_list = []
     for (_, item), query, query_emb in zip(metadata.iterrows(), queries, all_embs):
         topk = local_search(query_emb, embeddings, metadata, k=k)
         rr = reciprocal_rank(topk, item["id"])
-        results_list.append({
-            "id": item["id"],
-            "query": query[:60],
-            "articleType": item["articleType"],
-            "baseColour": item["baseColour"],
-            "rr": rr,
-            "rank": int(1 / rr) if rr > 0 else None,
-        })
+        results_list.append(
+            {
+                "id": item["id"],
+                "query": query[:60],
+                "articleType": item["articleType"],
+                "baseColour": item["baseColour"],
+                "rr": rr,
+                "rank": int(1 / rr) if rr > 0 else None,
+            }
+        )
 
     df = pd.DataFrame(results_list)
 

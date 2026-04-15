@@ -36,8 +36,15 @@ def plot_distribution(metadata, out_path):
         for j in range(len(colours)):
             val = matrix[i, j]
             if val > 0.001:
-                ax.text(j, i, f"{val:.1%}", ha="center", va="center", fontsize=6,
-                        color="white" if val > 0.02 else "black")
+                ax.text(
+                    j,
+                    i,
+                    f"{val:.1%}",
+                    ha="center",
+                    va="center",
+                    fontsize=6,
+                    color="white" if val > 0.02 else "black",
+                )
 
     fig.colorbar(ax.images[0], ax=ax, shrink=0.8)
     plt.tight_layout()

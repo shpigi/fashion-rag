@@ -12,7 +12,6 @@ from fashion_rag.config import (
     MODEL_NAME,
 )
 
-
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 
@@ -27,9 +26,9 @@ def encode_texts(queries, model, processor, batch_size=32):
     all_embs = []
     for i in range(0, len(queries), batch_size):
         batch = [f"a photo of {q}" for q in queries[i : i + batch_size]]
-        inputs = processor(
-            text=batch, return_tensors="pt", padding=True, truncation=True
-        ).to(DEVICE)
+        inputs = processor(text=batch, return_tensors="pt", padding=True, truncation=True).to(
+            DEVICE
+        )
         with torch.no_grad():
             emb = model.get_text_features(**inputs).pooler_output
         emb = emb / emb.norm(dim=-1, keepdim=True)
@@ -113,9 +112,13 @@ def main():
     query_emb = encode_text(query, model, processor)
     results = search(query_emb)
 
-    print(f"\nTop 10 results for: \"{query}\"\n")
+    print(f'\nTop 10 results for: "{query}"\n')
     for _, row in results.iterrows():
-        print(f"  {row['score']:.3f}  {row['id']}  {row['baseColour']} {row['articleType']} ({row['gender']}, {row['season']})")
+        r = row
+        print(
+            f"  {r['score']:.3f}  {r['id']}  {r['baseColour']} {r['articleType']}"
+            f" ({r['gender']}, {r['season']})"
+        )
 
 
 if __name__ == "__main__":

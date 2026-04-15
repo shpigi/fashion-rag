@@ -2,15 +2,18 @@ import argparse
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 from fashion_rag.search import encode_texts, load_bq_index, load_model
 
 
 def reduce(embeddings, method="umap"):
     if method == "umap":
         from umap import UMAP
+
         return UMAP(n_components=2, random_state=42).fit_transform(embeddings)
     else:
         from sklearn.manifold import TSNE
+
         return TSNE(n_components=2, perplexity=30, random_state=42).fit_transform(embeddings)
 
 
@@ -34,8 +37,8 @@ def main():
 
     print(f"Running {args.method}...")
     coords = reduce(all_embs, method=args.method)
-    img_coords = coords[:len(image_embs)]
-    txt_coords = coords[len(image_embs):]
+    img_coords = coords[: len(image_embs)]
+    txt_coords = coords[len(image_embs) :]
 
     categories = metadata["articleType"].values
     unique_cats = sorted(set(categories))
@@ -55,7 +58,12 @@ def main():
     axes[2].scatter(txt_coords[:, 0], txt_coords[:, 1], c=colors, s=10, alpha=0.5, marker="x")
     axes[2].set_title("Both (o=image, x=text)")
 
-    handles = [plt.Line2D([0], [0], marker="o", color="w", markerfacecolor=cmap(cat_to_idx[c]), markersize=6) for c in unique_cats]
+    handles = [
+        plt.Line2D(
+            [0], [0], marker="o", color="w", markerfacecolor=cmap(cat_to_idx[c]), markersize=6
+        )
+        for c in unique_cats
+    ]
     fig.legend(handles, unique_cats, loc="center right", fontsize=7)
     plt.tight_layout(rect=[0, 0, 0.88, 1])
 
