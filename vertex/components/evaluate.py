@@ -10,7 +10,7 @@ def evaluate(
     type_confusion_out: dsl.Output[dsl.HTML],
     colour_confusion_out: dsl.Output[dsl.HTML],
     distribution_out: dsl.Output[dsl.HTML],
-):
+) -> None:
     import base64
     import io
 
@@ -29,7 +29,7 @@ def evaluate(
     metrics_out.log_metric("MRR_type", summary["mrr_type"])
     metrics_out.log_metric("Recall", summary["recall"])
 
-    def to_html(title, plot_fn, *args):
+    def to_html(title: str, plot_fn, *args) -> str:
         buf = io.BytesIO()
         plot_fn(*args, buf)
         b64 = base64.b64encode(buf.getvalue()).decode()

@@ -4,7 +4,7 @@ from fashion_rag.config import COMPONENT_IMAGE
 
 
 @dsl.component(base_image=COMPONENT_IMAGE)
-def resolve_ids(recreate: bool, ids_out: dsl.Output[dsl.Artifact]):
+def resolve_ids(recreate: bool, ids_out: dsl.Output[dsl.Artifact]) -> None:
     import json
 
     from fashion_rag.embed import delete_embeddings_table, get_ids_to_embed

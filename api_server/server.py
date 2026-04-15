@@ -1,7 +1,10 @@
 import io
 import os
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from typing import Any
 
+import pandas as pd
 from fastapi import FastAPI, File, Query, UploadFile
 from fastapi.responses import JSONResponse, StreamingResponse
 from google.cloud import storage
@@ -19,7 +22,7 @@ from fashion_rag.search import search as bq_search
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     model, processor = load_model()
     app.state.model = model
     app.state.processor = processor
@@ -31,8 +34,8 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="fashion-search", lifespan=lifespan)
 
 
-def _format_results(df):
-    results = []
+def _format_results(df: pd.DataFrame) -> list[dict[str, Any]]:
+    results: list[dict[str, Any]] = []
     for _, row in df.iterrows():
         item_id = int(row["id"])
         results.append(
@@ -51,8 +54,8 @@ def _format_results(df):
     return results
 
 
-@app.get("/images/{image_id}.jpg")
-async def get_image(image_id: int):
+@app.get("/images/{image_id}.jpg", response_model=None)
+async def get_image(image_id: int) -> StreamingResponse | JSONResponse:
     """Proxy an image from GCS."""
     bucket = app.state.gcs.bucket(GCS_BUCKET)
     blob = bucket.blob(f"images/{image_id}.jpg")
@@ -63,7 +66,9 @@ async def get_image(image_id: int):
 
 
 @app.get("/search/text")
-def search_text(q: str = Query(..., description="Text query"), k: int = Query(5, ge=1, le=50)):
+def search_text(
+    q: str = Query(..., description="Text query"), k: int = Query(5, ge=1, le=50)
+) -> list[dict[str, Any]]:
     """Search the catalog by text description."""
     emb = encode_text(q, app.state.model, app.state.processor)
     df = bq_search(emb, k=k)
@@ -71,7 +76,9 @@ def search_text(q: str = Query(..., description="Text query"), k: int = Query(5,
 
 
 @app.post("/search/image")
-def search_image(file: UploadFile = File(...), k: int = Query(5, ge=1, le=50)):
+def search_image(
+    file: UploadFile = File(...), k: int = Query(5, ge=1, le=50)
+) -> list[dict[str, Any]]:
     """Search the catalog by uploading an image."""
     data = file.file.read()
     image = Image.open(io.BytesIO(data)).convert("RGB")
@@ -81,14 +88,14 @@ def search_image(file: UploadFile = File(...), k: int = Query(5, ge=1, le=50)):
 
 
 @app.get("/search/similar/{item_id}")
-def search_similar(item_id: int, k: int = Query(5, ge=1, le=50)):
+def search_similar(item_id: int, k: int = Query(5, ge=1, le=50)) -> list[dict[str, Any]]:
     """Find items similar to a given item by ID."""
     df = search_by_id(item_id, k=k)
     return _format_results(df)
 
 
 @app.get("/metadata/values")
-def metadata_values():
+def metadata_values() -> dict[str, list[str]]:
     """Return unique values for key metadata fields (cached at startup)."""
     return app.state.metadata_values
 

@@ -5,6 +5,7 @@ from PIL import Image
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 from transformers import CLIPModel, CLIPProcessor
+from upath import UPath
 
 from fashion_rag.config import (
     BQ_EMBEDDINGS_TABLE,
@@ -24,18 +25,18 @@ BQ_SCHEMA = [
 
 
 class ImageDataset(Dataset):
-    def __init__(self, image_paths):
+    def __init__(self, image_paths: list[UPath]) -> None:
         self.paths = image_paths
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.paths)
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Image.Image:
         with self.paths[idx].open("rb") as f:
             return Image.open(f).convert("RGB")
 
 
-def get_ids_to_embed(recreate=True):
+def get_ids_to_embed(recreate: bool = True) -> list[int]:
     client = bigquery.Client(project=GCP_PROJECT)
     all_ids = [
         row.id for row in client.query(f"SELECT id FROM `{BQ_METADATA_TABLE}` ORDER BY id").result()
@@ -56,7 +57,9 @@ def get_ids_to_embed(recreate=True):
     return missing
 
 
-def write_embeddings(ids, embeddings, disposition="WRITE_APPEND"):
+def write_embeddings(
+    ids: list[int], embeddings: np.ndarray, disposition: str = "WRITE_APPEND"
+) -> None:
     client = bigquery.Client(project=GCP_PROJECT)
     rows = [{"id": int(pid), "embedding": emb.tolist()} for pid, emb in zip(ids, embeddings)]
     job_config = bigquery.LoadJobConfig(
@@ -68,13 +71,13 @@ def write_embeddings(ids, embeddings, disposition="WRITE_APPEND"):
     print(f"Wrote {len(rows)} rows to {BQ_EMBEDDINGS_TABLE} ({disposition})")
 
 
-def delete_embeddings_table():
+def delete_embeddings_table() -> None:
     client = bigquery.Client(project=GCP_PROJECT)
     client.delete_table(BQ_EMBEDDINGS_TABLE, not_found_ok=True)
     print(f"Deleted {BQ_EMBEDDINGS_TABLE}")
 
 
-def embed_images(ids, shard_index=0, num_shards=1):
+def embed_images(ids: list[int], shard_index: int = 0, num_shards: int = 1) -> None:
     if not ids:
         print("Nothing to embed")
         return

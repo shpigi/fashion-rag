@@ -11,19 +11,20 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from typing import Any
 
 import httpx
 
 DEFAULT_BASE = "http://localhost:8080"
 
 
-def search_text(base_url: str, query: str, k: int):
+def search_text(base_url: str, query: str, k: int) -> list[dict[str, Any]]:
     resp = httpx.get(f"{base_url}/search/text", params={"q": query, "k": k}, timeout=30)
     resp.raise_for_status()
     return resp.json()
 
 
-def search_image(base_url: str, image_path: str, k: int):
+def search_image(base_url: str, image_path: str, k: int) -> list[dict[str, Any]]:
     with open(image_path, "rb") as f:
         resp = httpx.post(
             f"{base_url}/search/image", params={"k": k}, files={"file": f}, timeout=30
@@ -32,13 +33,13 @@ def search_image(base_url: str, image_path: str, k: int):
     return resp.json()
 
 
-def download_image(base_url: str, image_url: str, dest: Path):
+def download_image(base_url: str, image_url: str, dest: Path) -> None:
     resp = httpx.get(f"{base_url}{image_url}", timeout=15)
     resp.raise_for_status()
     dest.write_bytes(resp.content)
 
 
-def print_results(results, base_url: str, save_dir: Path | None):
+def print_results(results: list[dict[str, Any]], base_url: str, save_dir: Path | None) -> None:
     for i, r in enumerate(results, 1):
         print(f"{i}. [{r['score']:.3f}] {r['productDisplayName']}")
         print(f"   {r['baseColour']} {r['articleType']} | {r['gender']} | {r['season']}")
@@ -50,7 +51,7 @@ def print_results(results, base_url: str, save_dir: Path | None):
         print()
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Fashion catalog search")
     parser.add_argument("--url", default=DEFAULT_BASE, help="API base URL")
     sub = parser.add_subparsers(dest="command", required=True)

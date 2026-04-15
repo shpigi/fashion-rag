@@ -4,7 +4,7 @@ from fashion_rag.config import COMPONENT_IMAGE
 
 
 @dsl.component(base_image=COMPONENT_IMAGE)
-def embed_shard(ids_in: dsl.Input[dsl.Artifact], shard_index: int, num_shards: int):
+def embed_shard(ids_in: dsl.Input[dsl.Artifact], shard_index: int, num_shards: int) -> None:
     import json
 
     from fashion_rag.embed import embed_images
