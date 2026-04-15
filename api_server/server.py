@@ -1,13 +1,14 @@
 import io
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, File, Query, UploadFile
 from fastapi.responses import JSONResponse, StreamingResponse
-from google.cloud import storage
+from google.cloud import bigquery, storage
 from PIL import Image
 
-from fashion_rag.config import GCP_PROJECT, GCS_BUCKET
-from fashion_rag.search import encode_image, encode_text, load_model
+from fashion_rag.config import BQ_METADATA_TABLE, GCP_PROJECT, GCS_BUCKET
+from fashion_rag.search import encode_image, encode_text, load_model, search_by_id
 from fashion_rag.search import search as bq_search
 
 
@@ -17,6 +18,12 @@ async def lifespan(app: FastAPI):
     app.state.model = model
     app.state.processor = processor
     app.state.gcs = storage.Client(project=GCP_PROJECT)
+    client = bigquery.Client(project=GCP_PROJECT)
+    df = client.query(f"SELECT baseColour, articleType FROM `{BQ_METADATA_TABLE}`").to_dataframe()
+    app.state.metadata_values = {
+        "baseColour": sorted(df["baseColour"].dropna().unique().tolist()),
+        "articleType": sorted(df["articleType"].dropna().unique().tolist()),
+    }
     yield
 
 
@@ -72,7 +79,20 @@ def search_image(file: UploadFile = File(...), k: int = Query(5, ge=1, le=50)):
     return _format_results(df)
 
 
+@app.get("/search/similar/{item_id}")
+def search_similar(item_id: int, k: int = Query(5, ge=1, le=50)):
+    """Find items similar to a given item by ID."""
+    df = search_by_id(item_id, k=k)
+    return _format_results(df)
+
+
+@app.get("/metadata/values")
+def metadata_values():
+    """Return unique values for key metadata fields (cached at startup)."""
+    return app.state.metadata_values
+
+
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
