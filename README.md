@@ -41,15 +41,16 @@ GCP assets are instantiated with code (found in the [Makefile](Makefile)).
 
 **Serving** A FastAPI service handles text-to-image and image-to-image retrieval, encoding queries with CLIP at inference time. A Streamlit app provides a thin interactive frontend. Both deploy to Cloud Run (scale-to-zero) with images stored in Artifact Registry.
 
-**Claude Code skill** A [Claude Code skill](skill/) lets you search the catalog and generate outfit images conversationally via `/fashion-search`. It uses Gemini to analyze matched items and Imagen to generate a styled outfit illustration.
+<p align="center">
+  <img src="assets/api.png" alt="FastAPI" width="600">
+</p>
+
+**Claude Code skill** A [Claude Code skill](skill/README.md) lets you search the catalog and generate outfit images conversationally via `/fashion-search`. It uses Gemini to analyze matched items and Imagen to generate a styled outfit illustration.
 
 <p align="center">
   <img src="assets/hiking_outfit.png" alt="Outfit generation example" width="700">
 </p>
 
-<p align="center">
-  <img src="assets/api.png" alt="FastAPI" width="600">
-</p>
 
 ### Code arrangement
 
