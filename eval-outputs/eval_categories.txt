@@ -1,0 +1,327 @@
+Query                          Avail  RR@10 RR_col RR_typ   R@10
+----------------------------------------------------------------
+Yellow Watches                     4   1.00   1.00   1.00   1.00
+White Shirts                       6   1.00   1.00   1.00   0.67
+White Sandals                      2   1.00   1.00   1.00   1.00
+White Kurtas                       2   1.00   1.00   1.00   1.00
+White Jeans                        4   1.00   1.00   1.00   1.00
+White Handbags                     2   1.00   1.00   1.00   1.00
+Silver Watches                     4   1.00   1.00   1.00   0.50
+Black Earrings                     2   1.00   1.00   1.00   1.00
+Black Dresses                      2   1.00   1.00   1.00   1.00
+Black Casual Shoes                 6   1.00   1.00   1.00   0.67
+Black Backpacks                    2   1.00   1.00   1.00   1.00
+Beige Watches                      6   1.00   1.00   1.00   0.67
+Beige Wallets                      2   1.00   1.00   1.00   1.00
+Beige Tshirts                     10   1.00   1.00   1.00   0.40
+Beige Track Pants                  2   1.00   1.00   1.00   1.00
+Silver Handbags                    2   1.00   1.00   1.00   1.00
+Red Watches                        4   1.00   1.00   1.00   1.00
+Red Sunglasses                     2   1.00   1.00   1.00   1.00
+Red Sports Shoes                   4   1.00   1.00   1.00   1.00
+Black Track Pants                  2   1.00   1.00   1.00   1.00
+Black Sweaters                     2   1.00   1.00   1.00   1.00
+Black Skirts                       2   1.00   1.00   1.00   1.00
+Black Shorts                       2   1.00   1.00   1.00   1.00
+Black Jeans                        6   1.00   1.00   1.00   0.33
+Black Handbags                     4   1.00   1.00   1.00   0.50
+Black Formal Shoes                 6   1.00   1.00   1.00   1.00
+Red Belts                          2   1.00   1.00   1.00   1.00
+Red Backpacks                      2   1.00   1.00   1.00   1.00
+Purple Watches                     4   1.00   1.00   1.00   1.00
+Purple Wallets                     2   1.00   1.00   1.00   1.00
+Purple Tshirts                     8   1.00   1.00   1.00   0.75
+Purple Sports Shoes                4   1.00   1.00   1.00   1.00
+Purple Shirts                      6   1.00   1.00   1.00   1.00
+Purple Jeans                       2   1.00   1.00   1.00   1.00
+Purple Flip Flops                  2   1.00   1.00   1.00   1.00
+Purple Dresses                     2   1.00   1.00   1.00   1.00
+Purple Backpacks                   2   1.00   1.00   1.00   1.00
+Pink Watches                       4   1.00   1.00   1.00   1.00
+Pink Wallets                       2   1.00   1.00   1.00   1.00
+Pink Tshirts                       8   1.00   1.00   1.00   0.25
+Pink Sunglasses                    2   1.00   1.00   1.00   1.00
+Pink Sports Shoes                  4   1.00   1.00   1.00   1.00
+Pink Skirts                        2   1.00   1.00   1.00   1.00
+Blue Heels                         4   1.00   1.00   1.00   1.00
+Blue Handbags                      4   1.00   1.00   1.00   1.00
+Blue Earrings                      2   1.00   1.00   1.00   1.00
+Blue Dresses                       2   1.00   1.00   1.00   1.00
+Blue Casual Shoes                  6   1.00   1.00   1.00   0.33
+Blue Caps                          2   1.00   1.00   1.00   1.00
+Blue Belts                         2   1.00   1.00   1.00   1.00
+Black Wallets                      2   1.00   1.00   1.00   1.00
+Black Trousers                     2   1.00   1.00   1.00   1.00
+Blue Watches                       6   1.00   1.00   1.00   0.67
+Blue Wallets                       2   1.00   1.00   1.00   1.00
+Blue Track Pants                   2   1.00   1.00   1.00   1.00
+Blue Sweatshirts                   2   1.00   1.00   1.00   1.00
+Blue Sunglasses                    2   1.00   1.00   1.00   1.00
+Blue Jeans                         6   1.00   1.00   1.00   1.00
+Pink Shirts                        6   1.00   1.00   1.00   0.67
+Pink Kurtas                        4   1.00   1.00   1.00   1.00
+Pink Handbags                      4   1.00   1.00   1.00   1.00
+Pink Flip Flops                    2   1.00   1.00   1.00   1.00
+Pink Dresses                       2   1.00   1.00   1.00   1.00
+Pink Belts                         2   1.00   1.00   1.00   1.00
+Pink Backpacks                     2   1.00   1.00   1.00   1.00
+Orange Watches                     4   1.00   1.00   1.00   0.50
+Orange Wallets                     2   1.00   1.00   1.00   1.00
+Orange Tshirts                     8   1.00   1.00   1.00   0.50
+Orange Tops                        4   1.00   1.00   1.00   0.50
+Orange Sunglasses                  2   1.00   1.00   1.00   1.00
+Brown Kurtas                       4   1.00   1.00   1.00   0.50
+Brown Jackets                      2   1.00   1.00   1.00   1.00
+Brown Handbags                     4   1.00   1.00   1.00   1.00
+Brown Formal Shoes                 6   1.00   1.00   1.00   0.67
+Brown Dresses                      2   1.00   1.00   1.00   1.00
+Brown Caps                         2   1.00   1.00   1.00   1.00
+Brown Backpacks                    2   1.00   1.00   1.00   1.00
+Orange Shirts                      6   1.00   1.00   1.00   0.67
+Orange Kurtas                      4   1.00   1.00   1.00   0.50
+Orange Handbags                    4   1.00   1.00   1.00   0.50
+Orange Flip Flops                  2   1.00   1.00   1.00   1.00
+Orange Backpacks                   2   1.00   1.00   1.00   1.00
+Navy Blue Tops                     4   1.00   1.00   1.00   0.50
+Green Casual Shoes                 6   1.00   1.00   1.00   1.00
+Green Caps                         2   1.00   1.00   1.00   1.00
+Green Belts                        2   1.00   1.00   1.00   1.00
+Green Backpacks                    2   1.00   1.00   1.00   1.00
+Brown Watches                      6   1.00   1.00   1.00   0.33
+Brown Tshirts                     10   1.00   1.00   1.00   0.20
+Brown Track Pants                  2   1.00   1.00   1.00   1.00
+Brown Sweatshirts                  2   1.00   1.00   1.00   1.00
+Brown Sports Shoes                 4   1.00   1.00   1.00   1.00
+Navy Blue Sports Shoes             4   1.00   1.00   1.00   0.50
+Navy Blue Shorts                   2   1.00   1.00   1.00   1.00
+Navy Blue Shirts                   6   1.00   1.00   1.00   0.67
+Navy Blue Jackets                  2   1.00   1.00   1.00   1.00
+Maroon Wallets                     2   1.00   1.00   1.00   1.00
+Maroon Tshirts                     8   1.00   1.00   1.00   0.50
+Maroon Sunglasses                  2   1.00   1.00   1.00   1.00
+Maroon Shorts                      2   1.00   1.00   1.00   1.00
+Maroon Jackets                     2   1.00   1.00   1.00   1.00
+Maroon Handbags                    4   1.00   1.00   1.00   1.00
+Green Sweatshirts                  2   1.00   1.00   1.00   1.00
+Green Sweaters                     2   1.00   1.00   1.00   1.00
+Green Skirts                       2   1.00   1.00   1.00   1.00
+Green Kurtas                       4   1.00   1.00   1.00   0.50
+Green Handbags                     4   1.00   1.00   1.00   1.00
+Green Flip Flops                   2   1.00   1.00   1.00   1.00
+Maroon Earrings                    2   1.00   1.00   1.00   1.00
+Maroon Belts                       2   1.00   1.00   1.00   1.00
+Grey Tshirts                       8   1.00   1.00   1.00   0.50
+Grey Trousers                      2   1.00   1.00   1.00   1.00
+Grey Tops                          4   1.00   1.00   1.00   0.50
+Grey Sports Shoes                  4   1.00   1.00   1.00   0.50
+Grey Skirts                        2   1.00   1.00   1.00   1.00
+Grey Shorts                        2   1.00   1.00   1.00   1.00
+Grey Jeans                         4   1.00   1.00   1.00   1.00
+Grey Jackets                       2   1.00   1.00   1.00   1.00
+Grey Casual Shoes                  6   1.00   1.00   1.00   0.33
+Green Watches                      6   1.00   1.00   1.00   1.00
+Green Wallets                      2   1.00   1.00   1.00   1.00
+Green Tshirts                      8   1.00   1.00   1.00   0.75
+Green Track Pants                  2   1.00   1.00   1.00   1.00
+Beige Backpacks                    2   1.00   1.00   1.00   1.00
+Yellow Tops                        2   1.00   1.00   1.00   1.00
+Yellow Sunglasses                  2   1.00   1.00   1.00   1.00
+Yellow Sports Shoes                4   1.00   1.00   1.00   1.00
+Yellow Kurtas                      2   1.00   1.00   1.00   1.00
+Yellow Handbags                    2   1.00   1.00   1.00   1.00
+Yellow Flip Flops                  2   1.00   1.00   1.00   1.00
+Yellow Dresses                     2   1.00   1.00   1.00   1.00
+Yellow Casual Shoes                4   1.00   1.00   1.00   1.00
+Beige Sports Shoes                 6   1.00   1.00   1.00   0.67
+Beige Shorts                       2   1.00   1.00   1.00   1.00
+Beige Handbags                     4   1.00   1.00   1.00   0.50
+Beige Formal Shoes                 2   1.00   1.00   1.00   1.00
+Beige Flip Flops                   2   1.00   1.00   1.00   1.00
+Beige Flats                        2   1.00   1.00   1.00   1.00
+Beige Caps                         2   1.00   1.00   1.00   1.00
+Beige Belts                        2   1.00   1.00   1.00   1.00
+Beige Heels                        4   0.33   1.00   0.33   1.00
+Beige Jackets                      2   0.33   1.00   0.33   1.00
+Green Trousers                     2   0.33   1.00   0.33   1.00
+Yellow Tshirts                     8   0.33   1.00   0.33   0.75
+Beige Shirts                       8   0.33   1.00   0.33   0.50
+Grey Watches                       6   0.33   0.33   1.00   0.33
+Green Dresses                      2   0.33   1.00   0.33   1.00
+Grey Heels                         2   0.33   0.33   1.00   1.00
+Green Jackets                      2   0.33   1.00   0.33   1.00
+Grey Handbags                      4   0.33   0.33   0.33   1.00
+Black Jackets                      2   0.33   0.33   1.00   1.00
+Black Sports Shoes                 6   0.33   0.33   1.00   0.67
+Red Flip Flops                     2   0.33   0.33   1.00   1.00
+Black Flats                        2   0.33   0.33   0.33   1.00
+White Flip Flops                   2   0.33   0.33   1.00   1.00
+Blue Sweaters                      2   0.33   1.00   0.33   1.00
+Navy Blue Wallets                  2   0.33   0.33   1.00   1.00
+Orange Casual Shoes                6   0.33   1.00   0.33   0.67
+Brown Earrings                     2   0.33   0.33   1.00   1.00
+Pink Jeans                         2   0.33   0.33   1.00   1.00
+Brown Flip Flops                   2   0.33   0.33   0.33   1.00
+Navy Blue Tshirts                  8   0.33   0.33   1.00   0.50
+Navy Blue Trousers                 2   0.33   0.33   1.00   1.00
+Orange Belts                       2   0.33   0.33   1.00   1.00
+Navy Blue Belts                    2   0.33   0.33   1.00   1.00
+Navy Blue Jeans                    4   0.33   0.33   1.00   0.50
+Brown Sweaters                     2   0.33   1.00   0.33   1.00
+Navy Blue Sunglasses               2   0.33   0.33   1.00   1.00
+Brown Shorts                       2   0.33   0.33   1.00   1.00
+Brown Sunglasses                   2   0.33   0.33   1.00   1.00
+Navy Blue Casual Shoes             6   0.33   1.00   0.33   0.67
+Navy Blue Flip Flops               2   0.33   0.33   1.00   1.00
+Navy Blue Handbags                 4   0.33   0.33   1.00   0.50
+Maroon Watches                     4   0.33   0.33   1.00   0.50
+Maroon Sports Shoes                4   0.33   0.33   0.33   0.50
+Maroon Flip Flops                  2   0.33   0.33   1.00   1.00
+Green Shorts                       2   0.33   1.00   0.33   1.00
+Red Tops                           2   0.33   1.00   0.33   1.00
+Silver Flip Flops                  2   0.33   0.33   1.00   1.00
+Beige Sweaters                     2   0.33   0.33   0.33   1.00
+White Sports Shoes                 4   0.33   1.00   0.33   0.50
+White Sunglasses                   2   0.33   0.33   1.00   1.00
+White Casual Shoes                 4   0.33   0.33   1.00   0.50
+White Backpacks                    2   0.33   0.33   1.00   1.00
+Black Tshirts                     10   0.33   0.33   1.00   0.60
+Black Sunglasses                   4   0.33   0.33   1.00   0.50
+Purple Casual Shoes                6   0.33   1.00   0.33   0.67
+Blue Formal Shoes                  2   0.33   1.00   0.33   1.00
+Black Heels                        4   0.33   0.33   1.00   1.00
+Black Watches                      6   0.20   0.20   1.00   0.33
+Beige Trousers                     2   0.20   1.00   0.33   1.00
+Red Tshirts                        8   0.20   0.20   1.00   0.50
+Black Kurtas                       4   0.20   0.20   1.00   0.50
+Green Sandals                      2   0.20   1.00   0.20   1.00
+Green Earrings                     2   0.20   0.20   1.00   1.00
+Maroon Dresses                     2   0.20   1.00   0.20   1.00
+Yellow Shirts                      6   0.20   1.00   0.20   0.33
+Beige Sandals                      2   0.20   1.00   0.20   1.00
+Maroon Casual Shoes                6   0.20   0.33   1.00   0.33
+Grey Kurtas                        4   0.20   1.00   0.33   0.50
+Grey Sunglasses                    2   0.20   0.20   1.00   1.00
+Beige Dresses                      4   0.20   0.20   1.00   0.50
+Beige Casual Shoes                 6   0.20   1.00   0.33   0.33
+Beige Kurtas                       4   0.20   1.00   0.20   0.50
+Black Sweatshirts                  2   0.20   0.33   1.00   1.00
+Red Heels                          2   0.20   0.20   0.20   1.00
+Purple Sandals                     2   0.20   1.00   0.20   1.00
+Purple Sunglasses                  2   0.20   0.20   1.00   1.00
+Blue Backpacks                     2   0.20   0.20   1.00   1.00
+Green Shirts                       8   0.20   0.33   0.20   0.25
+Brown Trousers                     2   0.20   1.00   0.20   1.00
+Blue Shirts                        8   0.20   0.20   0.20   0.25
+Orange Sandals                     2   0.20   1.00   0.20   1.00
+Blue Skirts                        2   0.20   1.00   0.33   1.00
+Green Sports Shoes                 4   0.20   1.00   0.20   1.00
+Pink Heels                         2   0.20   1.00   0.20   1.00
+Blue Shorts                        2   0.20   0.20   1.00   1.00
+Green Sunglasses                   2   0.20   0.20   1.00   1.00
+Purple Belts                       2   0.14   0.14   1.00   1.00
+Pink Sandals                       2   0.14   1.00   0.14   1.00
+Brown Shirts                       8   0.14   0.33   0.20   0.25
+Navy Blue Sandals                  2   0.14   0.14   1.00   1.00
+Navy Blue Backpacks                2   0.14   0.20   1.00   1.00
+Grey Flip Flops                    2   0.14   0.14   1.00   1.00
+Grey Sandals                       2   0.14   0.14   0.14   1.00
+Grey Backpacks                     2   0.14   0.14   1.00   1.00
+Purple Kurtas                      2   0.14   1.00   0.14   1.00
+Silver Casual Shoes                6   0.14   0.14   1.00   0.67
+Red Sandals                        2   0.14   0.20   0.14   1.00
+Orange Heels                       2   0.14   1.00   0.14   1.00
+Orange Sports Shoes                4   0.14   1.00   0.14   0.50
+Black Flip Flops                   2   0.11   0.20   1.00   1.00
+Red Casual Shoes                   6   0.11   0.14   1.00   0.33
+Brown Sandals                      2   0.11   0.14   0.33   1.00
+Pink Casual Shoes                  6   0.11   1.00   0.20   0.33
+Silver Heels                       2   0.11   0.11   0.20   1.00
+Red Wallets                        2   0.11   0.11   1.00   1.00
+Yellow Heels                       2   0.11   1.00   0.20   1.00
+White Wallets                      2   0.11   0.11   1.00   1.00
+Brown Casual Shoes                 6   0.11   1.00   0.11   0.33
+Brown Skirts                       2   0.11   1.00   0.33   1.00
+Blue Trousers                      2   0.11   1.00   0.20   1.00
+Maroon Kurtas                      4   0.11   1.00   0.14   0.50
+Red Kurtas                         2   0.11   0.33   0.14   1.00
+Grey Wallets                       2   0.00   0.00   1.00   0.00
+Green Heels                        2   0.00   1.00   0.00   0.00
+Green Flats                        2   0.00   1.00   0.00   0.00
+Grey Shirts                        8   0.00   0.20   1.00   0.00
+Grey Flats                         2   0.00   1.00   0.33   0.00
+White Watches                      4   0.00   0.00   1.00   0.00
+White Tshirts                      8   0.00   0.20   1.00   0.00
+Beige Skirts                       2   0.00   0.14   1.00   0.00
+Yellow Wallets                     2   0.00   0.00   1.00   0.00
+Green Tops                         4   0.00   1.00   0.00   0.00
+Grey Belts                         2   0.00   0.00   1.00   0.00
+Grey Dresses                       2   0.00   1.00   0.14   0.00
+Brown Jeans                        2   0.00   0.00   1.00   0.00
+Maroon Tops                        4   0.00   1.00   0.00   0.00
+Maroon Heels                       2   0.00   1.00   0.00   0.00
+Maroon Flats                       2   0.00   0.20   0.00   0.00
+Maroon Shirts                      8   0.00   1.00   0.33   0.00
+Maroon Formal Shoes                4   0.00   0.00   1.00   0.00
+Orange Dresses                     2   0.00   1.00   0.14   0.00
+Brown Belts                        2   0.00   0.00   1.00   0.00
+Brown Flats                        2   0.00   0.00   0.11   0.00
+Navy Blue Watches                  4   0.00   0.33   1.00   0.00
+Brown Wallets                      2   0.00   0.00   1.00   0.00
+Maroon Sandals                     2   0.00   0.20   0.00   0.00
+Navy Blue Dresses                  2   0.00   0.20   1.00   0.00
+Navy Blue Kurtas                   4   0.00   0.33   0.00   0.00
+Navy Blue Heels                    2   0.00   0.11   1.00   0.00
+Navy Blue Skirts                   2   0.00   0.20   1.00   0.00
+Brown Tops                         4   0.00   1.00   0.00   0.00
+Blue Sports Shoes                  4   0.00   0.14   1.00   0.00
+Blue Sandals                       2   0.00   1.00   0.14   0.00
+Blue Kurtas                        4   0.00   0.11   0.20   0.00
+Brown Heels                        2   0.00   0.00   1.00   0.00
+Purple Tops                        4   0.00   1.00   0.00   0.00
+Black Shirts                       8   0.00   1.00   0.14   0.00
+Red Dresses                        2   0.00   0.14   0.33   0.00
+Red Handbags                       2   0.00   0.14   1.00   0.00
+Blue Flip Flops                    2   0.00   0.14   1.00   0.00
+Blue Flats                         2   0.00   0.20   0.00   0.00
+Blue Tops                          4   0.00   1.00   0.00   0.00
+Blue Tshirts                      10   0.00   0.00   1.00   0.00
+Pink Tops                          4   0.00   0.11   0.33   0.00
+Blue Jackets                       2   0.00   0.33   0.00   0.00
+Purple Handbags                    2   0.00   1.00   0.33   0.00
+Purple Heels                       2   0.00   1.00   0.00   0.00
+Black Sandals                      2   0.00   1.00   0.00   0.00
+Beige Sweatshirts                  2   0.00   0.33   1.00   0.00
+Silver Sandals                     2   0.00   0.00   0.33   0.00
+Silver Sports Shoes                4   0.00   0.00   0.33   0.00
+Red Shirts                         6   0.00   0.14   0.00   0.00
+Black Tops                         4   0.00   1.00   0.00   0.00
+Silver Belts                       2   0.00   0.00   1.00   0.00
+Silver Kurtas                      2   0.00   0.00   1.00   0.00
+Silver Wallets                     2   0.00   0.00   1.00   0.00
+Silver Sunglasses                  2   0.00   0.00   1.00   0.00
+Black Belts                        2   0.00   0.00   1.00   0.00
+Black Caps                         2   0.00   0.33   0.20   0.00
+Beige Tops                         4   0.00   1.00   0.00   0.00
+White Dresses                      2   0.00   1.00   0.20   0.00
+White Heels                        2   0.00   1.00   0.33   0.00
+White Tops                         2   0.00   1.00   0.20   0.00
+
+================================================================
+MRR@10:                   0.542
+MRR@10 (colour):          0.732
+MRR@10 (type):            0.767
+Mean Recall@10:           0.688
+
+Category retrieval eval: for each (baseColour, articleType) combination in the
+metadata, encode "{colour} {articleType}" as a CLIP text query and retrieve
+the top-K most similar images from the embedding index.
+
+Metrics:
+  MRR@K         — Mean Reciprocal Rank: average of 1/rank of the first result
+                  matching both colour and type. Higher = correct items appear
+                  earlier in the results.
+  MRR@K(colour) — MRR considering only colour match.
+  MRR@K(type)   — MRR considering only articleType match.
+  Recall@K      — Fraction of available matching items found in top-K,
+                  averaged across queries. Denominator is min(K, available)
+                  so rare categories are not penalised.

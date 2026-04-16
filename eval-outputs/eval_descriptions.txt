@@ -1,0 +1,55 @@
+Description-based retrieval eval (K=10, 1000 items)
+
+articleType                  MRR Count
+----------------------------------------
+Backpacks                  1.000    24
+Sweaters                   1.000    10
+Caps                       0.867    10
+Shorts                     0.833    16
+Sweatshirts                0.800    10
+Skirts                     0.778    16
+Wallets                    0.754    30
+Jackets                    0.726    16
+Track Pants                0.707    10
+Earrings                   0.695    10
+Flip Flops                 0.672    30
+Sports Shoes               0.654    64
+Tshirts                    0.607   120
+Dresses                    0.582    30
+Kurtas                     0.581    50
+Watches                    0.520    72
+Sandals                    0.515    28
+Jeans                      0.503    30
+Tops                       0.501    50
+Belts                      0.493    26
+Handbags                   0.488    50
+Sunglasses                 0.461    30
+Trousers                   0.450    14
+Casual Shoes               0.421    86
+Flats                      0.378    14
+Heels                      0.353    36
+Formal Shoes               0.329    20
+Shirts                     0.321    98
+
+========================================
+MRR@10:              0.548
+Hit@1:              0.462
+Hit@10:              0.812
+
+Description-based retrieval eval: for each of the 500 items, encode the
+productDisplayName as a CLIP text query and check whether the item's own
+image appears in the top-K results.
+
+This measures how well CLIP aligns a product's text description with its
+image in the shared embedding space. Unlike the category eval, this targets
+exact item retrieval rather than category-level matching.
+
+Metrics:
+  MRR@K  — Mean Reciprocal Rank: average of 1/rank of the item's own image.
+           MRR=1 means every item is the top result for its own description.
+  Hit@1  — Fraction of items where the top result is the item itself.
+  Hit@K  — Fraction of items found anywhere in the top-K results.
+
+Breakdown by articleType shows which categories have the most visually
+distinctive items (high MRR) vs categories where items look too similar
+for CLIP to distinguish by description alone (low MRR).

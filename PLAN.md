@@ -34,3 +34,11 @@ Local-first development. Get everything working on local data before touching GC
 
 - [x] How well does clip based image search match item type and colour
 
+
+## Phase 6: Refactors / improvements
+
+- [x] "Find similar" image-to-image search in app, faster BQ lookup by item ID
+- [x] Ruff linting, pytest unit tests, pre-commit hooks
+- [x] FastAPI service layer (text search, image search, similar-item endpoints)
+- [x] Streamlit app calls FastAPI instead of GCP directly
+- [x] Type hints across codebase
