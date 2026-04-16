@@ -18,6 +18,7 @@ This project demonstrates a complete system lifecycle from data ingestion throug
 <p align="center">
   <img src="assets/CLIP.png" alt="CLIP" width="700">
 </p>
+
 - **BigQuery as the vector store** rather than introducing a dedicated vector database, embeddings are stored alongside product metadata in BQ. This keeps the data layer in one place, enables retrieval quality analysis in SQL, and stays GCP-native.
 - **Metadata-based automated evaluation** the dataset includes structured attributes (colour, article type, season, gender) for every product. These serve as ground truth to automatically measure retrieval precision: if a user searches "blue sneakers," we check whether returned items are actually blue and actually sneakers. A more comprehensive eval runs in the extraction pipeline. Full results and analysis are in [EVAL.md](EVAL.md).
 - **Core functionality can run local** using GCS and BQ as data sources. This enables faster development speed. Vertex components are just wrappers. The api and app can run local or in-Docker or deployed to Google Cloud Run.
