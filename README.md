@@ -45,6 +45,13 @@ GCP assets are instantiated with code (found in the [Makefile](Makefile)).
   <img src="assets/api.png" alt="FastAPI" width="600">
 </p>
 
+**Claude Code skill** A [Claude Code skill](skill/README.md) lets you search the catalog and generate outfit images conversationally via `/fashion-search`. It uses Gemini to analyze matched items and Imagen to generate a styled outfit illustration.
+
+<p align="center">
+  <img src="assets/hiking_outfit.png" alt="Outfit generation example" width="700">
+</p>
+
+
 ### Code arrangement
 
 ```
@@ -52,6 +59,7 @@ fashion-rag/
 ├── src/fashion_rag/        # Core library: embedding, search, config
 ├── api_server/             # FastAPI REST endpoints
 ├── app/                    # Streamlit UI (calls the API)
+├── skill/                  # Claude Code skill + CLI client (see skill/README.md)
 ├── vertex/                 # KFP pipeline components + Dockerfile
 ├── evals/                  # Evaluation scripts (MRR, confusion matrices, visualization)
 ├── eval-outputs/           # Generated plots and metrics

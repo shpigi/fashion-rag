@@ -1,7 +1,9 @@
 .claude/
+.env
 .venv/
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
 data/
 clip_embed_pipeline.yaml
+agent-outputs/
