@@ -110,46 +110,42 @@ def _load_genai_client() -> "GenaiClient":
     return genai.Client()
 
 
-def describe_items_with_gemini(image_paths: list[Path], item_names: list[str]) -> str:
-    """Use Gemini to analyze product images and write an Imagen prompt."""
+def generate_outfit_with_gemini(
+    image_paths: list[Path], item_names: list[str], output_path: Path
+) -> None:
+    """Use Gemini 3.1 Flash native image generation to create an outfit photo."""
     from google.genai import types
 
     client = _load_genai_client()
 
     parts: list = [
         types.Part.from_text(
-            text="You are a fashion stylist. Look at these product images carefully. "
-            "Write a single prompt (under 200 words) for an AI image generator to create "
-            "a full-body fashion illustration of a stylish woman wearing ALL these items "
-            "together for an elegant evening out. Describe each item's exact colors, "
-            "materials, and style as you see them in the images. "
-            "Output ONLY the prompt text, nothing else.\n\nItems:\n"
+            text="You are a fashion photographer. Look at these product images carefully. "
+            "Generate a photorealistic full-body photograph of a stylish woman wearing ALL "
+            "these items together on a bright sunny spring day outdoors in nature. "
+            "Natural lighting, sharp details, realistic skin and fabric textures, "
+            "high-end editorial fashion shoot style.\n\nItems:\n"
         )
     ]
-
     for path, name in zip(image_paths, item_names):
         parts.append(types.Part.from_text(text=f"\n{name}:"))
         parts.append(types.Part.from_bytes(data=path.read_bytes(), mime_type="image/jpeg"))
 
-    response = client.models.generate_content(model="gemini-2.5-flash", contents=parts)
-    return response.text
-
-
-def generate_outfit_image(prompt: str, output_path: Path) -> None:
-    """Use Imagen to generate a fashion illustration."""
-    from google.genai import types
-
-    client = _load_genai_client()
-    response = client.models.generate_images(
-        model="imagen-4.0-generate-001",
-        prompt=prompt,
-        config=types.GenerateImagesConfig(
-            number_of_images=1,
-            aspect_ratio="3:4",
-            person_generation=types.PersonGeneration.ALLOW_ADULT,
-        ),
+    response = client.models.generate_content(
+        model="gemini-3.1-flash-image-preview",
+        contents=parts,
+        config=types.GenerateContentConfig(response_modalities=["IMAGE", "TEXT"]),
     )
-    response.generated_images[0].image.save(str(output_path))
+
+    candidates = response.candidates or []
+    content = candidates[0].content if candidates else None
+    parts_out = content.parts if content else []
+    for part in parts_out or []:
+        if part.inline_data is not None and part.inline_data.data is not None:
+            output_path.write_bytes(bytes(part.inline_data.data))
+            return
+
+    raise RuntimeError("Gemini did not return an image")
 
 
 def combine_images(mood_board: "PILImage", generated_path: Path, output_path: Path) -> None:
@@ -205,15 +201,10 @@ def run_outfit(base_url: str, queries: list[str], output: Path) -> None:
     mood_board.save(str(mood_path))
     print(f"  Saved: {mood_path}")
 
-    # 3. Use Gemini to describe the actual items for Imagen
-    print("Analyzing items with Gemini...")
-    prompt = describe_items_with_gemini(image_paths, item_names)
-    print(f"  Imagen prompt ({len(prompt.split())} words)")
-
-    # 4. Generate outfit illustration with Imagen
-    print("Generating outfit illustration with Imagen...")
+    # 3. Generate outfit photo directly with Gemini native image generation
+    print("Generating outfit photo with Gemini...")
     gen_path = output.with_stem(output.stem + "_generated")
-    generate_outfit_image(prompt, gen_path)
+    generate_outfit_with_gemini(image_paths, item_names, gen_path)
     print(f"  Saved: {gen_path}")
 
     # 5. Combine mood board + generated image
